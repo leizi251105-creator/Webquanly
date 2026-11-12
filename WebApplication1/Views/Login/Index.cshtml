@@ -1,0 +1,160 @@
+﻿@model WebApplication1.Models.TaiKhoan
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <meta charset="utf-8" />
+
+    <title>Đăng nhập</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f1f5f9;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 400px;
+            background: white;
+            padding: 35px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+            .login-box h2 {
+                text-align: center;
+                margin-bottom: 10px;
+                color: #2563eb;
+            }
+
+            .login-box p {
+                text-align: center;
+                color: #666;
+                margin-bottom: 25px;
+            }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 7px;
+                font-weight: bold;
+            }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+            .form-control:focus {
+                border-color: #2563eb;
+                outline: none;
+            }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            .btn-login:hover {
+                background: #1d4ed8;
+            }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="login-box">
+
+        <h2>ĐĂNG NHẬP</h2>
+
+
+
+        <p>Hệ thống quản lý</p>
+
+        @using (Html.BeginForm("Autherize", "Login", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-group">
+
+                <label>Tên đăng nhập</label>
+
+                @Html.TextBoxFor(
+                    model => model.TenDangNhap,
+                    new
+                    {
+                        @class = "form-control",
+                        placeholder = "Nhập tên đăng nhập"
+                    }
+                )
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Mật khẩu</label>
+
+                @Html.PasswordFor(
+                    model => model.MatKhau,
+                    new
+                    {
+                        @class = "form-control",
+                        placeholder = "Nhập mật khẩu"
+                    }
+                )
+
+            </div>
+
+            <button type="submit" class="btn-login">
+                ĐĂNG NHẬP
+            </button>
+
+            if (ViewBag.LoginErrorMessage != null)
+            {
+                <div class="error">
+                    @ViewBag.LoginErrorMessage
+                </div>
+            }
+        }
+
+    </div>
+
+</body>
+</html>

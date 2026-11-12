@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="aa2feab8f6574856b1af94bc807d35ec" Name="Diagram1" ZoomLevel="71">
+        <EntityTypeShape EntityType="MOCBREWModel.Account" Width="1.5" PointX="5.25" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Category" Width="1.5" PointX="8.25" PointY="30.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Customer" Width="1.5" PointX="8.25" PointY="20.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Ingredient" Width="1.5" PointX="7.5" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.InventoryTransaction" Width="1.5" PointX="7.5" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.OrderDetail" Width="1.5" PointX="12.75" PointY="12.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.OrderDetailTopping" Width="1.5" PointX="18" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.OrderPromotion" Width="1.5" PointX="15.75" PointY="13" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Order" Width="1.5" PointX="10.5" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Permission" Width="1.5" PointX="0.75" PointY="13" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Product" Width="1.5" PointX="10.5" PointY="29.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.ProductSize" Width="1.5" PointX="10.5" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.ProductTopping" Width="1.5" PointX="18" PointY="20" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Promotion" Width="1.5" PointX="13.5" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.PurchaseReceiptDetail" Width="1.5" PointX="9.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.PurchaseReceipt" Width="1.5" PointX="7.5" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.RecipeDetail" Width="1.5" PointX="15" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Recipe" Width="1.5" PointX="12.75" PointY="4" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Role" Width="1.5" PointX="3" PointY="13" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Size" Width="1.5" PointX="8.25" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Supplier" Width="1.5" PointX="5.25" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.SystemLog" Width="1.5" PointX="7.5" PointY="26.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.Topping" Width="1.5" PointX="15.75" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="MOCBREWModel.UserPermission" Width="1.5" PointX="7.5" PointY="16.375" IsExpanded="true" />
+        <AssociationConnector Association="MOCBREWModel.FK_Accounts_Roles" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_InventoryTransactions_Accounts" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_Orders_Accounts" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_PurchaseReceipts_Accounts" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_SystemLogs_Accounts" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_UserPermissions_Accounts" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_UserPermissions_GrantedBy" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_UserPermissions_RevokedBy" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_Products_Categories" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_Orders_Customers" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_InventoryTransactions_Ingredients" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_PurchaseReceiptDetails_Ingredients" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_RecipeDetails_Ingredients" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_OrderDetails_Orders" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_OrderDetails_Products" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_OrderDetails_ProductSizes" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_OrderDetailToppings_OrderDetails" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_OrderDetailToppings_Toppings" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_OrderPromotions_Orders" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_OrderPromotions_Promotions" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_UserPermissions_Permissions" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_ProductSizes_Products" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_ProductToppings_Products" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_ProductSizes_Sizes" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_Recipes_ProductSizes" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_ProductToppings_Toppings" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_PurchaseReceiptDetails_Receipts" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_PurchaseReceipts_Suppliers" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.FK_RecipeDetails_Recipes" ManuallyRouted="false" />
+        <AssociationConnector Association="MOCBREWModel.RolePermissions" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

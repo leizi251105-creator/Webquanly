@@ -1,0 +1,250 @@
+﻿
+@model WebApplication1.Models.ViewModels.LichSuDonHangViewModel
+
+@{
+    ViewBag.Title = "Đơn hàng của tôi";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    .order-page {
+        max-width: 1100px;
+        margin: 35px auto;
+    }
+
+    .order-header {
+        background: linear-gradient(120deg, #198754, #35a56f);
+        color: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 25px;
+    }
+
+    .order-card {
+        background: white;
+        border: 1px solid #e8ecef;
+        border-radius: 13px;
+        padding: 22px;
+        margin-bottom: 18px;
+        box-shadow: 0 3px 12px rgba(0,0,0,.04);
+    }
+
+    .order-code {
+        color: #198754;
+        font-weight: 700;
+        font-size: 18px;
+    }
+
+    .order-label {
+        color: #777;
+        font-size: 13px;
+    }
+
+    .order-value {
+        font-weight: 600;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 7px 13px;
+        border-radius: 20px;
+        background: #fff3cd;
+        color: #856404;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .search-card {
+        background: white;
+        border: 1px solid #e8ecef;
+        border-radius: 13px;
+        padding: 25px;
+        margin-bottom: 25px;
+    }
+
+    .search-input {
+        min-height: 47px;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="order-page">
+
+    <!-- HEADER -->
+    <div class="order-header">
+        <h2 class="fw-bold">
+            <i class="fa-solid fa-box-open me-2"></i>
+            Đơn hàng của tôi
+        </h2>
+
+        <p class="mb-0">
+            Theo dõi và xem lại các đơn hàng bạn đã đặt tại nhà thuốc.
+        </p>
+    </div>
+
+    <!-- FORM TÌM KIẾM -->
+    <div class="search-card">
+        <h5 class="fw-bold mb-3">
+            <i class="fa-solid fa-magnifying-glass text-success me-2"></i>
+            Tìm đơn hàng theo số điện thoại
+        </h5>
+
+        @using (Html.BeginForm("LichSu", "DonHang", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="row g-3 align-items-end">
+                <div class="col-md-9">
+                    <label class="form-label fw-semibold">
+                        Số điện thoại đặt hàng
+                    </label>
+
+                    @Html.TextBoxFor(m => m.SoDienThoai, new
+                    {
+                        @class = "form-control search-input",
+                        placeholder = "Nhập số điện thoại của bạn"
+                    })
+
+                    @Html.ValidationMessageFor(m => m.SoDienThoai, "",
+                        new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-3">
+                    <button type="submit"
+                            class="btn btn-success w-100 search-input">
+                        <i class="fa-solid fa-search me-1"></i>
+                        Tìm đơn hàng
+                    </button>
+                </div>
+            </div>
+
+            @Html.ValidationSummary(true, "",
+                new { @class = "text-danger mt-3" })
+        }
+    </div>
+
+    <!-- DANH SÁCH ĐƠN HÀNG -->
+    @if (Model.DanhSachDonHang != null)
+    {
+        if (Model.DanhSachDonHang.Count > 0)
+        {
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-bold mb-0">
+                    Kết quả tìm kiếm
+                </h5>
+
+                <span class="badge bg-success">
+                    @Model.DanhSachDonHang.Count đơn hàng
+                </span>
+            </div>
+
+            foreach (var donHang in Model.DanhSachDonHang)
+            {
+                <div class="order-card">
+
+                    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+                        <div>
+                            <div class="order-code">
+                                DH@(donHang.MaDonHang.ToString("D5"))
+                            </div>
+
+                            <small class="text-muted">
+                                Ngày đặt:
+                                @donHang.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                            </small>
+                        </div>
+
+                        @if (donHang.TrangThai == "Chờ xác nhận")
+                        {
+                            <span class="badge bg-warning text-dark p-2">
+                                Chờ xác nhận
+                            </span>
+                        }
+                        else if (donHang.TrangThai == "Đã xác nhận")
+                        {
+                            <div>
+                                <span class="badge bg-success p-2">
+                                    Đã xác nhận
+                                </span>
+
+                                <div class="small text-success mt-2">
+                                    <i class="fa-solid fa-truck-fast me-1"></i>
+                                    Chờ đơn vị vận chuyển
+                                </div>
+                            </div>
+                        }
+                        else if (donHang.TrangThai == "Đang giao hàng")
+                        {
+                            <span class="badge bg-primary p-2">
+                                Đang giao hàng
+                            </span>
+                        }
+                        else if (donHang.TrangThai == "Đã giao hàng")
+                        {
+                            <span class="badge bg-success p-2">
+                                Đã giao hàng
+                            </span>
+                        }
+                        else if (donHang.TrangThai == "Đã hủy")
+                        {
+                            <span class="badge bg-danger p-2">
+                                Đã hủy
+                            </span>
+                        }
+                    </div>
+
+                    <hr />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="order-label">Khách hàng</div>
+                            <div class="order-value">
+                                @(donHang.KhachHang != null
+                                    ? donHang.KhachHang.HoTen : "")
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="order-label">Số điện thoại</div>
+                            <div class="order-value">
+                                @(donHang.KhachHang != null
+                                    ? donHang.KhachHang.SoDienThoai : "")
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="order-label">Tổng tiền</div>
+                            <div class="text-danger fw-bold fs-5">
+                                @donHang.TongTien.ToString("N0") đ
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 text-md-end">
+                            <a href="@Url.Action("Details", "DonHang",
+    new
+    {
+        id = donHang.MaDonHang,
+        soDienThoai = Model.SoDienThoai
+    })"
+                               class="btn btn-outline-success">
+                                <i class="fa-solid fa-eye me-1"></i>
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        }
+    }
+
+    <div class="text-center mt-4">
+        <a href="@Url.Action("Index", "Customer")"
+           class="btn btn-outline-secondary">b
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Tiếp tục mua sắm
+        </a>
+    </div>
+
+</div>
+b

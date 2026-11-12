@@ -1,0 +1,301 @@
+﻿
+@model WebApplication1.Models.DonHang
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string trangThai = Model.TrangThai ?? "";
+    string mauTrangThai = "bg-secondary";
+
+    if (trangThai == "Chờ xác nhận")
+    {
+        mauTrangThai = "bg-warning text-dark";
+    }
+    else if (trangThai == "Đã xác nhận")
+    {
+        mauTrangThai = "bg-info text-dark";
+    }
+    else if (trangThai == "Đang giao hàng")
+    {
+        mauTrangThai = "bg-primary";
+    }
+    else if (trangThai == "Đã giao hàng")
+    {
+        mauTrangThai = "bg-success";
+    }
+    else if (trangThai == "Đã hủy")
+    {
+        mauTrangThai = "bg-danger";
+    }
+}
+
+<style>
+    .order-detail-card {
+        background: #fff;
+        border-radius: 14px;
+        padding: 25px;
+        box-shadow: 0 3px 15px rgba(0,0,0,.06);
+        margin-bottom: 22px;
+    }
+
+    .order-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #263445;
+    }
+
+    .info-label {
+        color: #7b8794;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #263445;
+    }
+
+    .product-image {
+        width: 55px;
+        height: 55px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #f5f7fa;
+        padding: 5px;
+    }
+
+    .total-box {
+        background: #f0fdf4;
+        border-radius: 10px;
+        padding: 18px;
+    }
+
+    .total-price {
+        color: #198754;
+        font-size: 25px;
+        font-weight: 700;
+    }
+</style>
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <div class="order-title">
+                <i class="fa-solid fa-file-invoice me-2 text-success"></i>
+                Chi tiết đơn hàng
+            </div>
+            <div class="text-muted mt-1">
+                Mã đơn hàng:
+                <strong class="text-dark">
+                    @("DH" + Model.MaDonHang.ToString("D5"))
+                </strong>
+            </div>
+        </div>
+
+        <a href="@Url.Action("Index", "QuanLyDonHang")"
+           class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            Quay lại
+        </a>
+    </div>
+
+    @if (TempData["ThongBao"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["ThongBao"]
+        </div>
+    }
+
+    @if (TempData["ThongBaoLoi"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ThongBaoLoi"]
+        </div>
+    }
+
+    <div class="row">
+
+        <div class="col-lg-8">
+
+            <div class="order-detail-card">
+                <h5 class="fw-bold mb-4">
+                    <i class="fa-solid fa-user me-2 text-success"></i>
+                    Thông tin khách hàng
+                </h5>
+
+                @if (Model.KhachHang != null)
+                {
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="info-label">Họ và tên</div>
+                            <div class="info-value">@Model.KhachHang.HoTen</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-label">Số điện thoại</div>
+                            <div class="info-value">@Model.KhachHang.SoDienThoai</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-label">Email</div>
+                            <div class="info-value">
+                                @(string.IsNullOrWhiteSpace(Model.KhachHang.Email)
+                                    ? "Chưa cung cấp" : Model.KhachHang.Email)
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="info-label">Địa chỉ nhận hàng</div>
+                            <div class="info-value">@Model.KhachHang.DiaChi</div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="order-detail-card">
+                <h5 class="fw-bold mb-4">
+                    <i class="fa-solid fa-pills me-2 text-success"></i>
+                    Danh sách sản phẩm
+                </h5>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Đơn giá</th>
+                                <th class="text-center">Số lượng</th>
+                                <th class="text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var ct in Model.ChiTietDonHangs)
+                            {
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            @if (ct.Thuoc != null &&
+                                                !string.IsNullOrEmpty(ct.Thuoc.AnhThuoc))
+                                            {
+                                                <img src="@Url.Content(ct.Thuoc.AnhThuoc)"
+                                                     class="product-image" />
+                                            }
+                                            else
+                                            {
+                                                <div class="product-image d-flex align-items-center justify-content-center">
+                                                    <i class="fa-solid fa-pills text-success"></i>
+                                                </div>
+                                            }
+
+                                            <strong>
+                                                @(ct.Thuoc != null
+                                                    ? ct.Thuoc.TenThuoc : "Sản phẩm")
+                                            </strong>
+                                        </div>
+                                    </td>
+
+                                    <td>@String.Format("{0:N0} đ", ct.DonGia)</td>
+
+                                    <td class="text-center">@ct.SoLuong</td>
+
+                                    <td class="text-end fw-bold">
+                                        @String.Format("{0:N0} đ",
+                                            ct.ThanhTien ?? (ct.DonGia * ct.SoLuong))
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="total-box mt-3 text-end">
+                    <div class="text-muted mb-1">Tổng thanh toán</div>
+                    <div class="total-price">
+                        @String.Format("{0:N0} đ", Model.TongTien)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="order-detail-card">
+                <h5 class="fw-bold mb-4">
+                    <i class="fa-solid fa-clipboard-check me-2 text-success"></i>
+                    Thông tin đơn hàng
+                </h5>
+
+                <div class="mb-3">
+                    <div class="info-label">Mã đơn hàng</div>
+                    <div class="info-value">
+                        @("DH" + Model.MaDonHang.ToString("D5"))
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="info-label">Ngày đặt hàng</div>
+                    <div class="info-value">
+                        @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="info-label">Trạng thái hiện tại</div>
+                    <span class="badge @mauTrangThai p-2">
+                        @Model.TrangThai
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <div class="info-label">Phương thức thanh toán</div>
+                    <div class="info-value">Thanh toán khi nhận hàng (COD)</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="info-label">Ghi chú của khách hàng</div>
+                    <div class="info-value">
+                        @(string.IsNullOrWhiteSpace(Model.GhiChu)
+                            ? "Không có ghi chú" : Model.GhiChu)
+                    </div>
+                </div>
+
+                <hr />
+
+                @if (Model.TrangThai == "Chờ xác nhận")
+                {
+                    <div class="alert alert-warning small">
+                        <i class="fa-solid fa-circle-info me-1"></i>
+                        Đơn hàng đang chờ nhân viên xác nhận.
+                    </div>
+
+                    using (Html.BeginForm("XacNhan", "QuanLyDonHang",
+     new { id = Model.MaDonHang },
+     FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="btn btn-success btn-lg w-100"
+                                onclick="return confirm('Bạn có chắc chắn muốn xác nhận đơn hàng này?');">
+                            <i class="fa-solid fa-check me-2"></i>
+                            Xác nhận đơn hàng
+                        </button>
+                    }
+                }
+                else if (Model.TrangThai == "Đã xác nhận")
+                {
+                    <div class="alert alert-success">
+                        <i class="fa-solid fa-check-circle me-1"></i>
+                        Đơn hàng đã được xác nhận và đang chờ đơn vị vận chuyển.
+                    </div>
+                }
+
+            </div>
+
+        </div>
+    </div>
+</div>

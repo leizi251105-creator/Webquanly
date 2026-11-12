@@ -1,0 +1,297 @@
+﻿
+@model WebApplication1.Controllers.MocBrewStaffController.CreateStaffViewModel
+
+@{
+    ViewBag.Title = "Thêm nhân viên";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Thêm nhân viên - MỘC BREW</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <style>
+        body {
+            background: #f6f2eb;
+            font-family: 'Roboto', sans-serif;
+            color: #3b3029;
+        }
+
+        .header {
+            background: #35251e;
+            color: white;
+            padding: 20px 35px;
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 27px;
+        }
+
+        .main {
+            max-width: 950px;
+            margin: 35px auto;
+            padding: 0 15px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 5px 20px rgba(60, 40, 25, .06);
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            color: #493326;
+            font-weight: 700;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #514238;
+        }
+
+        .form-control {
+            padding: 11px 13px;
+            border-radius: 8px;
+        }
+
+            .form-control:focus {
+                border-color: #967057;
+                box-shadow: 0 0 0 .2rem rgba(121, 84, 61, .12);
+            }
+
+        .btn-coffee {
+            background: #79543d;
+            color: white;
+            border: none;
+            padding: 11px 25px;
+        }
+
+            .btn-coffee:hover {
+                background: #5d3e2d;
+                color: white;
+            }
+
+        .section-title {
+            color: #79543d;
+            font-weight: 700;
+            border-bottom: 1px solid #eee5dc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <div class="brand">MỘC BREW</div>
+                <small class="text-white-50">COFFEE MANAGEMENT SYSTEM</small>
+            </div>
+
+            <a href="@Url.Action("Index", "MocBrewStaff")"
+               class="btn btn-outline-light">
+                <i class="fa-solid fa-arrow-left me-2"></i>
+                Quay lại
+            </a>
+        </div>
+    </header>
+
+    <main class="main">
+
+        <div class="mb-4">
+            <h2 class="page-title">Thêm nhân viên mới</h2>
+            <p class="text-secondary">
+                Tạo tài khoản và thông tin đăng nhập cho nhân viên MỘC BREW.
+            </p>
+        </div>
+
+        <div class="form-card">
+
+            @using (Html.BeginForm(
+                "Create",
+                "MocBrewStaff",
+                FormMethod.Post,
+                new { autocomplete = "off" }))
+            {
+                @Html.AntiForgeryToken()
+
+                @Html.ValidationSummary(
+                         false,
+                         "",
+                         new { @class = "alert alert-danger" })
+
+                <h5 class="section-title">
+                    <i class="fa-solid fa-user me-2"></i>
+                    Thông tin nhân viên
+                </h5>
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Mã nhân viên *</label>
+
+                        @Html.TextBoxFor(m => m.EmployeeCode,
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     placeholder = "Ví dụ: NV001"
+                                 })
+
+                        @Html.ValidationMessageFor(m => m.EmployeeCode,
+                                 "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Họ và tên *</label>
+
+                        @Html.TextBoxFor(m => m.FullName,
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     placeholder = "Nhập họ và tên nhân viên"
+                                 })
+
+                        @Html.ValidationMessageFor(m => m.FullName,
+                                 "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+
+                        @Html.TextBoxFor(m => m.Email,
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     type = "email",
+                                     placeholder = "example@gmail.com"
+                                 })
+
+                        @Html.ValidationMessageFor(m => m.Email,
+                                 "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Số điện thoại</label>
+
+                        @Html.TextBoxFor(m => m.Phone,
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     placeholder = "Nhập số điện thoại"
+                                 })
+
+                        @Html.ValidationMessageFor(m => m.Phone,
+                                 "", new { @class = "text-danger small" })
+                    </div>
+
+                </div>
+
+                <h5 class="section-title">
+                    <i class="fa-solid fa-lock me-2"></i>
+                    Thông tin tài khoản
+                </h5>
+
+                <div class="row g-3 mb-4">
+
+                    <div class="col-md-6">
+                        <label class="form-label">Tên đăng nhập *</label>
+
+                        @Html.TextBoxFor(m => m.Username,
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     autocomplete = "off",
+                                     placeholder = "Nhập tên đăng nhập"
+                                 })
+
+                        @Html.ValidationMessageFor(m => m.Username,
+                                 "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Vai trò</label>
+
+                        <input type="text"
+                               class="form-control"
+                               value="Staff - Nhân viên"
+                               readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Mật khẩu *</label>
+
+                        @Html.PasswordFor(m => m.Password,
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     autocomplete = "new-password",
+                                     placeholder = "Ít nhất 8 ký tự"
+                                 })
+
+                        @Html.ValidationMessageFor(m => m.Password,
+                                 "", new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Xác nhận mật khẩu *</label>
+
+                        @Html.PasswordFor(m => m.ConfirmPassword,
+                                 new
+                                 {
+                                     @class = "form-control",
+                                     autocomplete = "new-password",
+                                     placeholder = "Nhập lại mật khẩu"
+                                 })
+
+                        @Html.ValidationMessageFor(m => m.ConfirmPassword,
+                                 "", new { @class = "text-danger small" })
+                    </div>
+
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fa-solid fa-circle-info me-2"></i>
+                    Tài khoản sau khi tạo sẽ có trạng thái hoạt động.
+                    Manager sẽ cấp quyền nghiệp vụ cho nhân viên ở chức năng
+                    phân quyền.
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 flex-wrap">
+
+                    <a href="@Url.Action("Index", "MocBrewStaff")"
+                       class="btn btn-light border px-4">
+                        Hủy
+                    </a>
+
+                    <button type="submit" class="btn btn-coffee">
+                        <i class="fa-solid fa-user-plus me-2"></i>
+                        Tạo tài khoản
+                    </button>
+
+                </div>
+            }
+
+        </div>
+
+    </main>
+
+</body>
+</html>

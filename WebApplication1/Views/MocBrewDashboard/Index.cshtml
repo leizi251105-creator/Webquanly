@@ -1,0 +1,590 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "Tổng quan - MỘC BREW";
+
+    string fullName = ViewBag.FullName as string ?? "Người dùng";
+    string username = ViewBag.Username as string ?? "";
+    string roleName = ViewBag.RoleName as string ?? "";
+    string roleDisplay = roleName;
+
+    if (roleName == "SystemAdmin")
+    {
+        roleDisplay = "Quản trị hệ thống";
+    }
+    else if (roleName == "Manager")
+    {
+        roleDisplay = "Quản lý cửa hàng";
+    }
+    else if (roleName == "Staff")
+    {
+        roleDisplay = "Nhân viên";
+    }
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>MỘC BREW | Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+          rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Roboto:wght@400;500;700&display=swap"
+          rel="stylesheet" />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f7f4f0;
+            font-family: 'Roboto', sans-serif;
+            color: #40352e;
+        }
+
+        .sidebar {
+            width: 255px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #35251d;
+            color: white;
+            padding: 28px 18px;
+            z-index: 1000;
+        }
+
+        .brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 25px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 2px;
+            padding-bottom: 28px;
+            border-bottom: 1px solid rgba(255,255,255,.12);
+        }
+
+            .brand i {
+                color: #d6a77a;
+            }
+
+        .menu-title {
+            color: #a99a8e;
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            margin: 28px 12px 12px;
+            text-transform: uppercase;
+        }
+
+        .menu-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 13px 14px;
+            margin-bottom: 7px;
+            border-radius: 9px;
+            color: #e6ddd6;
+            text-decoration: none;
+            font-size: 14px;
+            transition: .2s;
+        }
+
+            .menu-link:hover,
+            .menu-link.active {
+                background: #76513a;
+                color: white;
+            }
+
+            .menu-link i {
+                width: 20px;
+                text-align: center;
+            }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 25px;
+            left: 20px;
+            right: 20px;
+            color: #b9a99c;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 255px;
+            padding: 28px 35px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .page-heading h2 {
+            font-family: 'Playfair Display', serif;
+            color: #4b3021;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .page-heading p {
+            color: #94877d;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,.04);
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #ead8c8;
+            color: #68432f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: #99877a;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(110deg, #68432f, #9b7050);
+            color: white;
+            border-radius: 17px;
+            padding: 32px 35px;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .welcome-banner h3 {
+                font-family: 'Playfair Display', serif;
+                font-size: 27px;
+                margin-bottom: 10px;
+            }
+
+            .welcome-banner p {
+                color: #f0e2d6;
+                font-size: 14px;
+                margin: 0;
+            }
+
+        .welcome-icon {
+            position: absolute;
+            right: 45px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 85px;
+            color: rgba(255,255,255,.14);
+        }
+
+        .section-heading {
+            font-size: 18px;
+            font-weight: 700;
+            color: #503727;
+            margin-bottom: 18px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 14px;
+            height: 100%;
+            box-shadow: 0 3px 15px rgba(0,0,0,.035);
+            border: 1px solid #f0ebe6;
+        }
+
+        .stat-icon {
+            width: 43px;
+            height: 43px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 16px;
+            background: #f3e8de;
+            color: #8b5e43;
+        }
+
+        .stat-card h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #503727;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 12px;
+            color: #96897e;
+            margin: 0;
+        }
+
+        .function-card {
+            background: white;
+            padding: 23px;
+            border-radius: 13px;
+            height: 100%;
+            border: 1px solid #f0ebe6;
+            transition: .2s;
+        }
+
+            .function-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 20px rgba(75,46,32,.08);
+            }
+
+        .function-icon {
+            color: #8b5e43;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .function-card h6 {
+            font-weight: 700;
+            color: #503727;
+        }
+
+        .function-card p {
+            color: #94877d;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .logout-button {
+            border: none;
+            background: #f5e9df;
+            color: #70462e;
+            border-radius: 8px;
+            padding: 9px 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+            .logout-button:hover {
+                background: #ead5c4;
+            }
+
+        @@media(max-width: 900px) {
+            .sidebar {
+                width: 75px;
+                padding: 25px 10px;
+            }
+
+            .brand {
+                font-size: 0;
+            }
+
+                .brand i {
+                    font-size: 25px;
+                }
+
+            .menu-link {
+                justify-content: center;
+                font-size: 0;
+            }
+
+                .menu-link i {
+                    font-size: 18px;
+                }
+
+            .menu-title,
+            .sidebar-footer {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 75px;
+                padding: 22px;
+            }
+        }
+
+        @@media(max-width: 576px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .welcome-icon {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <i class="fa-solid fa-mug-hot me-2"></i>
+            MỘC BREW
+        </div>
+
+        <div class="menu-title">Tổng quan</div>
+
+        <a href="@Url.Action("Index", "MocBrewDashboard")"
+           class="menu-link active">
+            <i class="fa-solid fa-house"></i>
+            Tổng quan
+        </a>
+
+        <div class="menu-title">Quản lý cửa hàng</div>
+
+        <a href="#" class="menu-link">
+            <i class="fa-solid fa-box"></i>
+            Sản phẩm
+        </a>
+
+        <a href="#" class="menu-link">
+            <i class="fa-solid fa-cash-register"></i>
+            Bán hàng
+        </a>
+
+        <a href="#" class="menu-link">
+            <i class="fa-solid fa-receipt"></i>
+            Đơn hàng
+        </a>
+
+        <a href="#" class="menu-link">
+            <i class="fa-solid fa-warehouse"></i>
+            Kho nguyên liệu
+        </a>
+
+        <div class="menu-title">Hệ thống</div>
+
+        <a href="@Url.Action("Index", "MocBrewStaff")" class="menu-link">
+            <i class="fa-solid fa-users"></i>
+            Nhân viên và phân quyền
+        </a>
+
+        <a href="#" class="menu-link">
+            <i class="fa-solid fa-chart-line"></i>
+            Báo cáo
+        </a>
+
+        <div class="sidebar-footer">
+            MỘC BREW MANAGEMENT SYSTEM<br />
+            VERSION 1.0
+        </div>
+
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <div class="page-heading">
+                <h2>Tổng quan</h2>
+                <p>Chào mừng bạn đến với hệ thống quản lý MỘC BREW.</p>
+            </div>
+
+            <div class="user-profile">
+
+                <div class="avatar">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+
+                <div>
+                    <div class="user-name">@fullName</div>
+                    <div class="user-role">@roleDisplay (@username)</div>
+                </div>
+
+                @using (Html.BeginForm(
+                    "Logout",
+                    "MocBrewAuth",
+                    FormMethod.Post,
+                    new { @class = "ms-2" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit" class="logout-button">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        Thoát
+                    </button>
+                }
+
+            </div>
+
+        </div>
+
+        <!-- WELCOME -->
+        <section class="welcome-banner">
+
+            <h3>Xin chào, @fullName!</h3>
+
+            <p>
+                Chúc bạn có một ngày làm việc hiệu quả.
+                Chúc MỘC BREW luôn giữ trọn hương vị và chất lượng.
+            </p>
+
+            <i class="fa-solid fa-mug-hot welcome-icon"></i>
+
+        </section>
+
+        <!-- STATISTICS -->
+        <h5 class="section-heading">Tổng quan hoạt động</h5>
+
+        <div class="row g-3 mb-4">
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-box"></i>
+                    </div>
+                    <h3>--</h3>
+                    <p>Tổng sản phẩm</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                    <h3>--</h3>
+                    <p>Đơn hàng hôm nay</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <h3>--</h3>
+                    <p>Nhân viên</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <h3>--</h3>
+                    <p>Doanh thu hôm nay</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FUNCTIONS -->
+        <h5 class="section-heading">Chức năng quản lý</h5>
+
+        <div class="row g-3">
+
+            <div class="col-md-6 col-xl-4">
+                <div class="function-card">
+                    <div class="function-icon">
+                        <i class="fa-solid fa-mug-saucer"></i>
+                    </div>
+                    <h6>Quản lý sản phẩm</h6>
+                    <p>Quản lý danh mục, sản phẩm và kích cỡ đồ uống.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="function-card">
+                    <div class="function-icon">
+                        <i class="fa-solid fa-cash-register"></i>
+                    </div>
+                    <h6>Quản lý bán hàng</h6>
+                    <p>Thực hiện bán hàng và theo dõi giao dịch.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="function-card">
+                    <div class="function-icon">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </div>
+                    <h6>Quản lý đơn hàng</h6>
+                    <p>Tra cứu và quản lý trạng thái đơn hàng.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="function-card">
+                    <div class="function-icon">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <h6>Quản lý kho</h6>
+                    <p>Theo dõi nguyên liệu và tình hình tồn kho.</p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <a href="@Url.Action("Index", "MocBrewStaff")"
+                   class="text-decoration-none text-dark">
+
+                    <div class="function-card">
+                        <div class="function-icon">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+
+                        <h6>Quản lý nhân viên</h6>
+
+                        <p>Quản lý tài khoản và phân quyền theo nhân viên.</p>
+                    </div>
+
+                </a>
+            </div>
+
+            <div class="col-md-6 col-xl-4">
+                <div class="function-card">
+                    <div class="function-icon">
+                        <i class="fa-solid fa-chart-pie"></i>
+                    </div>
+                    <h6>Báo cáo thống kê</h6>
+                    <p>Theo dõi doanh thu và hiệu quả kinh doanh.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-5 mb-3 text-muted small">
+            © 2026 MỘC BREW. All rights reserved.
+        </div>
+
+    </main>
+
+</body>
+</html>

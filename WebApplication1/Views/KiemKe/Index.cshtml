@@ -1,0 +1,248 @@
+﻿
+@model IEnumerable<WebApplication1.Models.PhieuKiemKe>
+
+@{
+    ViewBag.Title = "Kiểm kê tồn kho";
+}
+
+<div class="container mt-4">
+
+    @if (TempData["ThongBao"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>
+            @TempData["ThongBao"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Đóng"></button>
+        </div>
+    }
+
+
+    <div class="d-flex justify-content-between align-items-start mb-3">
+
+        <div>
+            <h2 class="mb-1">Kiểm kê tồn kho</h2>
+            <p class="text-muted mb-0">
+                Quản lý các phiếu kiểm kê và theo dõi chênh lệch tồn kho.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a href="@Url.Action("BaoCao", "KiemKe")"
+               class="btn btn-sm btn-success">
+                <i class="fa-solid fa-chart-column me-1"></i>
+                Báo cáo
+            </a>
+
+            <a href="@Url.Action("Create", "KiemKe")"
+               class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-plus me-1"></i>
+                Lập phiếu
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- BỘ LỌC VÀ TÌM KIẾM -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <strong>
+                <i class="fa-solid fa-filter me-2"></i>
+                Tìm kiếm và lọc phiếu kiểm kê
+            </strong>
+        </div>
+
+        <div class="card-body">
+
+            @using (Html.BeginForm(
+                "Index",
+                "KiemKe",
+                FormMethod.Get,
+                new { @class = "row g-3" }))
+            {
+                <div class="col-md-6">
+                    <label class="form-label">
+                        Mã phiếu hoặc người lập
+                    </label>
+
+                    <input type="text"
+                           name="tuKhoa"
+                           class="form-control"
+                           value="@ViewBag.TuKhoa"
+                           placeholder="Nhập mã phiếu hoặc tên người lập..." />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Trạng thái</label>
+
+                    <select name="trangThai" class="form-select">
+                        <option value="">-- Tất cả trạng thái --</option>
+
+                        <option value="Chưa xác nhận"
+                                @(ViewBag.TrangThai == "Chưa xác nhận" ? "selected" : "")>
+                            Chưa xác nhận
+                        </option>
+
+                        <option value="Đã xác nhận"
+                                @(ViewBag.TrangThai == "Đã xác nhận" ? "selected" : "")>
+                            Đã xác nhận
+                        </option>
+
+                        <option value="Đã hủy"
+                                @(ViewBag.TrangThai == "Đã hủy" ? "selected" : "")>
+                            Đã hủy
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Từ ngày</label>
+
+                    <input type="date"
+                           name="tuNgay"
+                           class="form-control"
+                           value="@ViewBag.TuNgay" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Đến ngày</label>
+
+                    <input type="date"
+                           name="denNgay"
+                           class="form-control"
+                           value="@ViewBag.DenNgay" />
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-magnifying-glass me-1"></i>
+                        Tìm kiếm
+                    </button>
+
+                    <a href="@Url.Action("Index", "KiemKe")"
+                       class="btn btn-outline-secondary ms-2">
+                        <i class="fa-solid fa-rotate-left me-1"></i>
+                        Xóa bộ lọc
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- DANH SÁCH PHIẾU -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between">
+            <strong>
+                <i class="fa-solid fa-clipboard-list me-2"></i>
+                Danh sách phiếu kiểm kê
+            </strong>
+
+            <span class="badge bg-primary">
+                @Model.Count() phiếu
+            </span>
+        </div>
+
+        <div class="card-body">
+
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    <i class="fa-solid fa-circle-info me-2"></i>
+                    Không tìm thấy phiếu kiểm kê phù hợp.
+                    Bạn có thể thay đổi điều kiện tìm kiếm hoặc xóa bộ lọc.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">Mã phiếu</th>
+                                <th>Ngày kiểm kê</th>
+                                <th>Người lập</th>
+                                <th>Trạng thái</th>
+                                <th>Ghi chú</th>
+                                <th class="text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var phieu in Model)
+                            {
+                                <tr>
+                                    <td class="text-center">
+                                        <strong>#@phieu.MaPhieuKiemKe</strong>
+                                    </td>
+
+                                    <td>
+                                        @phieu.NgayKiemKe.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <td>
+                                        @(phieu.TaiKhoan != null
+                                            ? phieu.TaiKhoan.HoTen
+                                            : "Không xác định")
+                                    </td>
+
+                                    <td>
+                                        @if (phieu.TrangThai == "Chưa xác nhận")
+                                        {
+                                            <span class="badge bg-warning text-dark">
+                                                Chưa xác nhận
+                                            </span>
+                                        }
+                                        else if (phieu.TrangThai == "Đã xác nhận")
+                                        {
+                                            <span class="badge bg-success">
+                                                Đã xác nhận
+                                            </span>
+                                        }
+                                        else if (phieu.TrangThai == "Đã hủy")
+                                        {
+                                            <span class="badge bg-danger">
+                                                Đã hủy
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                @phieu.TrangThai
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(phieu.GhiChu)
+                                            ? "Không có"
+                                            : phieu.GhiChu)
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a href="@Url.Action(
+                                            "Details",
+                                            "KiemKe",
+                                            new { id = phieu.MaPhieuKiemKe })"
+                                           class="btn btn-sm btn-primary">
+                                            <i class="fa-solid fa-eye me-1"></i>
+                                            Xem chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

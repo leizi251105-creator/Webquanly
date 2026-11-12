@@ -1,0 +1,291 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "Quản lý bán hàng";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản lý bán hàng</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+
+    <style>
+        body {
+            margin: 0;
+            background: #f4f7fb;
+            font-family: Arial, sans-serif;
+            color: #263445;
+        }
+
+        .topbar {
+            background: #fff;
+            padding: 17px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,.05);
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 700;
+            color: #198754;
+        }
+
+        .main-container {
+            padding: 35px;
+        }
+
+        .welcome {
+            margin-bottom: 28px;
+        }
+
+            .welcome h3 {
+                font-weight: 700;
+            }
+
+        .stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 23px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+            height: 100%;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 21px;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .section-card {
+            background: white;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 3px 15px rgba(0,0,0,.05);
+            height: 100%;
+        }
+
+        .function-card {
+            display: block;
+            text-decoration: none;
+            color: #263445;
+            border: 1px solid #e8edf3;
+            border-radius: 12px;
+            padding: 22px;
+            transition: .2s;
+            height: 100%;
+        }
+
+            .function-card:hover {
+                border-color: #198754;
+                background: #f4fff8;
+                color: #198754;
+                transform: translateY(-3px);
+            }
+
+        .function-icon {
+            font-size: 28px;
+            color: #198754;
+            margin-bottom: 14px;
+        }
+
+        .logout-btn {
+            text-decoration: none;
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .role-label {
+            background: #e8f5ee;
+            color: #198754;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="brand">
+            <i class="fa-solid fa-capsules me-2"></i>
+            NHÀ THUỐC QUẢN LÝ
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="text-end">
+                <div class="fw-bold">@Session["fullName"]</div>
+                <span class="role-label">Nhân viên bán hàng</span>
+            </div>
+
+            <a href="@Url.Action("LogOut", "Login")"
+               class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket me-1"></i>
+                Đăng xuất
+            </a>
+        </div>
+    </header>
+
+    <main class="main-container">
+
+        <div class="welcome">
+            <h3>
+                Xin chào, @Session["fullName"]!
+            </h3>
+            <p class="text-muted">
+                Chào mừng bạn đến với hệ thống quản lý bán hàng.
+                Hãy chọn chức năng cần thực hiện.
+            </p>
+        </div>
+
+        <div class="row g-4 mb-4">
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-primary-subtle text-primary">
+                        <i class="fa-solid fa-receipt"></i>
+                    </div>
+                    <div class="text-muted">Tổng đơn hàng</div>
+                    <div class="stat-number">
+                        @ViewBag.TongDonHang
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-warning-subtle text-warning">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                    <div class="text-muted">Chờ xác nhận</div>
+                    <div class="stat-number">
+                        @ViewBag.DonChoXacNhan
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-info-subtle text-info">
+                        <i class="fa-solid fa-check-circle"></i>
+                    </div>
+                    <div class="text-muted">Đã xác nhận</div>
+                    <div class="stat-number">
+                        @ViewBag.DonDaXacNhan
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-xl-3">
+                <div class="stat-card">
+                    <div class="stat-icon bg-success-subtle text-success">
+                        <i class="fa-solid fa-truck"></i>
+                    </div>
+                    <div class="text-muted">Đã giao hàng</div>
+                    <div class="stat-number">
+                        @ViewBag.DonDaGiao
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row g-4">
+
+            <div class="col-lg-8">
+                <div class="section-card">
+                    <h5 class="fw-bold mb-4">
+                        <i class="fa-solid fa-grid-2 text-success me-2"></i>
+                        Chức năng bán hàng
+                    </h5>
+
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Index", "QuanLyDonHang")"
+                               class="function-card">
+                                <div class="function-icon">
+                                    <i class="fa-solid fa-receipt"></i>
+                                </div>
+                                <h6 class="fw-bold">Quản lý đơn hàng</h6>
+                                <p class="text-muted small mb-0">
+                                    Xem danh sách, kiểm tra chi tiết và xác nhận đơn hàng của khách.
+                                </p>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a href="@Url.Action("Index", "Customer")"
+                               class="function-card">
+                                <div class="function-icon">
+                                    <i class="fa-solid fa-store"></i>
+                                </div>
+                                <h6 class="fw-bold">Trang bán hàng</h6>
+                                <p class="text-muted small mb-0">
+                                    Truy cập trang sản phẩm và danh mục thuốc dành cho khách hàng.
+                                </p>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="section-card">
+                    <h5 class="fw-bold mb-4">
+                        <i class="fa-solid fa-user-tie text-success me-2"></i>
+                        Thông tin nhân viên
+                    </h5>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">Họ và tên</div>
+                        <div class="fw-bold">@Session["fullName"]</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">Tên đăng nhập</div>
+                        <div class="fw-bold">@Session["username"]</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-muted small">Vai trò</div>
+                        <div class="fw-bold">NhanVienBanHang</div>
+                    </div>
+
+                    <hr />
+
+                    <div class="text-success small">
+                        <i class="fa-solid fa-circle-check me-1"></i>
+                        Tài khoản đang hoạt động
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

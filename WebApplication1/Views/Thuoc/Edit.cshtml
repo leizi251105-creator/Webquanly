@@ -1,0 +1,203 @@
+﻿
+@model WebApplication1.Models.Thuoc
+
+@{
+    ViewBag.Title = "Sửa thông tin thuốc";
+}
+
+<div class="container mt-4">
+    <h3>Sửa thông tin thuốc</h3>
+    <hr />
+
+    @using (Html.BeginForm(
+     "Edit",
+     "Thuoc",
+     FormMethod.Post,
+     new { enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.MaThuoc)
+
+        @Html.ValidationSummary(false, "",
+            new { @class = "text-danger" })
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.TenThuoc, "Tên thuốc")
+            @Html.TextBoxFor(m => m.TenThuoc,
+                new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.TenThuoc, "",
+                new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.MaDanhMuc, "Danh mục thuốc")
+            @Html.DropDownListFor(m => m.MaDanhMuc,
+                (SelectList)ViewBag.MaDanhMuc,
+                "-- Chọn danh mục --",
+                new { @class = "form-select" })
+            @Html.ValidationMessageFor(m => m.MaDanhMuc, "",
+                new { @class = "text-danger" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.DonViTinh, "Đơn vị tính")
+            @Html.TextBoxFor(m => m.DonViTinh,
+                new { @class = "form-control" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.HoatChat, "Hoạt chất")
+            @Html.TextBoxFor(m => m.HoatChat,
+                new { @class = "form-control" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.HamLuong, "Hàm lượng")
+            @Html.TextBoxFor(m => m.HamLuong,
+                new { @class = "form-control" })
+        </div>
+        <!-- HÌNH ẢNH SẢN PHẨM -->
+        <div class="col-md-12 mb-3">
+
+            <label class="form-label fw-bold">
+                Hình ảnh sản phẩm
+            </label>
+
+            <!-- ẢNH HIỆN TẠI -->
+            <div class="mb-3">
+
+                <p class="text-muted mb-2">
+                    Hình ảnh hiện tại:
+                </p>
+
+                @if (!string.IsNullOrEmpty(Model.AnhThuoc))
+                {
+                    <img id="anhHienTai"
+                         src="@Url.Content(Model.AnhThuoc)"
+                         alt="Ảnh thuốc hiện tại"
+                         style="width:180px;
+                        height:180px;
+                        object-fit:contain;
+                        border:1px solid #ddd;
+                        border-radius:10px;
+                        padding:5px;" />
+                }
+                else
+                {
+                    <p class="text-muted">
+                        Sản phẩm chưa có hình ảnh.
+                    </p>
+                }
+
+            </div>
+
+            <!-- CHỌN ẢNH MỚI -->
+            <label class="form-label">
+                Chọn hình ảnh mới
+            </label>
+
+            <input type="file"
+                   name="anhFile"
+                   id="anhFile"
+                   class="form-control"
+                   accept=".jpg,.jpeg,.png" />
+
+            <small class="text-muted">
+                Chỉ chấp nhận JPG, JPEG, PNG.
+                Dung lượng tối đa 2MB.
+                Nếu không chọn ảnh mới, ảnh hiện tại sẽ được giữ nguyên.
+            </small>
+
+            <!-- XEM TRƯỚC ẢNH MỚI -->
+            <div class="mt-3">
+
+                <p class="text-muted mb-2">
+                    Xem trước ảnh mới:
+                </p>
+
+                <img id="xemTruocAnh"
+                     src="#"
+                     alt="Xem trước ảnh mới"
+                     style="display:none;
+                    width:180px;
+                    height:180px;
+                    object-fit:contain;
+                    border:1px solid #ddd;
+                    border-radius:10px;
+                    padding:5px;" />
+
+            </div>
+
+            @Html.ValidationMessage(
+                "AnhThuoc",
+                "",
+                new { @class = "text-danger" }
+            )
+
+        </div>
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.GiaNhap, "Giá nhập")
+            @Html.TextBoxFor(m => m.GiaNhap,
+                new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.GiaBan, "Giá bán")
+            @Html.TextBoxFor(m => m.GiaBan,
+                new { @class = "form-control", type = "number", step = "0.01", min = "0" })
+        </div>
+
+        <div class="form-group mb-3">
+            @Html.LabelFor(m => m.MucTonToiThieu, "Mức tồn tối thiểu")
+            @Html.TextBoxFor(m => m.MucTonToiThieu,
+                new { @class = "form-control", type = "number", min = "0" })
+        </div>
+
+        <div class="alert alert-info">
+            Số lượng tồn kho được quản lý qua chức năng kho,
+            không chỉnh sửa trực tiếp tại đây.
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Lưu thay đổi
+        </button>
+
+        <a href="@Url.Action("Index", "Thuoc")"
+           class="btn btn-secondary">
+            Quay lại
+        </a>
+    }
+</div>
+<script>
+    document.getElementById("anhFile").addEventListener("change", function () {
+
+        var file = this.files[0];
+        var anh = document.getElementById("xemTruocAnh");
+
+        if (!file) {
+            anh.style.display = "none";
+            return;
+        }
+
+        var duoiFile = file.name.split('.').pop().toLowerCase();
+
+        var dinhDangChoPhep = ["jpg", "jpeg", "png"];
+
+        if (!dinhDangChoPhep.includes(duoiFile)) {
+            alert("Vui lòng chọn ảnh JPG, JPEG hoặc PNG.");
+            this.value = "";
+            anh.style.display = "none";
+            return;
+        }
+
+        if (file.size > 2 * 1024 * 1024) {
+            alert("Dung lượng ảnh không được vượt quá 2MB.");
+            this.value = "";
+            anh.style.display = "none";
+            return;
+        }
+
+        anh.src = URL.createObjectURL(file);
+        anh.style.display = "block";
+    });
+</script>

@@ -1,0 +1,719 @@
+﻿
+@model WebApplication1.Models.ViewModels.CustomerHomeViewModel
+
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    .hero-banner {
+        background: linear-gradient(110deg, #007c4b, #21ad75);
+        border-radius: 18px;
+        padding: 45px;
+        color: white;
+        min-height: 270px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .hero-banner h1 {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1.35;
+            max-width: 550px;
+        }
+
+        .hero-banner p {
+            font-size: 16px;
+            margin: 15px 0 22px;
+            max-width: 520px;
+        }
+
+    .hero-button {
+        display: inline-block;
+        background: white;
+        color: #008b55;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+        .hero-button:hover {
+            background: #e9f8ef;
+            color: #006b42;
+        }
+
+    .hero-icon {
+        position: absolute;
+        right: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 150px;
+        color: rgba(255,255,255,.2);
+    }
+
+    .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .section-heading h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0;
+            color: #263b32;
+        }
+
+        .section-heading a {
+            color: #008b55;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+    .category-card {
+        background: white;
+        border-radius: 12px;
+        padding: 22px 12px;
+        text-align: center;
+        height: 100%;
+        border: 1px solid #edf0ee;
+        transition: .2s;
+        text-decoration: none;
+        color: #263238;
+        display: block;
+    }
+
+        .category-card:hover {
+            border-color: #008b55;
+            transform: translateY(-4px);
+            box-shadow: 0 5px 18px rgba(0,0,0,.07);
+            color: #008b55;
+        }
+
+    .category-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: #e8f7ef;
+        color: #008b55;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 12px;
+        font-size: 24px;
+    }
+
+    .category-name {
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 13px;
+        border: 1px solid #edf0ee;
+        height: 100%;
+        overflow: hidden;
+        transition: .2s;
+    }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 20px rgba(0,0,0,.08);
+        }
+
+    .product-image {
+        height: 185px;
+        background: #f7faf8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+    }
+
+        .product-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+    .product-placeholder {
+        color: #008b55;
+        font-size: 65px;
+    }
+
+    .product-info {
+        padding: 15px;
+    }
+
+    .product-name {
+        font-size: 15px;
+        font-weight: 700;
+        min-height: 42px;
+        color: #263238;
+        margin-bottom: 8px;
+    }
+
+    .product-unit {
+        color: #7b8580;
+        font-size: 13px;
+    }
+
+    .product-price {
+        font-size: 18px;
+        font-weight: 800;
+        color: #e53935;
+        margin: 10px 0;
+    }
+
+    .product-stock {
+        color: #008b55;
+        font-size: 12px;
+        margin-bottom: 12px;
+    }
+
+    .btn-product {
+        display: block;
+        width: 100%;
+        background: #008b55;
+        color: white;
+        padding: 9px;
+        border-radius: 7px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+        .btn-product:hover {
+            background: #006b42;
+            color: white;
+        }
+
+    .service-card {
+        background: white;
+        border: 1px solid #edf0ee;
+        border-radius: 12px;
+        padding: 22px 15px;
+        height: 100%;
+    }
+
+        .service-card i {
+            color: #008b55;
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .service-card h6 {
+            font-weight: 700;
+        }
+
+        .service-card p {
+            color: #758078;
+            font-size: 13px;
+            margin-bottom: 0;
+        }
+    /* BANNER KHUYẾN MÃI PHỤ */
+    .promotion-card {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        min-height: 175px;
+        padding: 25px;
+        border-radius: 18px;
+        overflow: hidden;
+        color: #263238;
+        text-decoration: none;
+        transition: .25s;
+    }
+
+        .promotion-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,.10);
+            color: #263238;
+        }
+
+    .promotion-pink {
+        background: linear-gradient(110deg, #ffe0ed, #ffc0d8);
+    }
+
+    .promotion-green {
+        background: linear-gradient(110deg, #e0f7df, #b9edb5);
+    }
+
+    .promotion-icon {
+        min-width: 95px;
+        height: 95px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 65px;
+    }
+
+    .promotion-pink .promotion-icon {
+        color: #ed4385;
+    }
+
+    .promotion-green .promotion-icon {
+        color: #15934d;
+    }
+
+    .promotion-content h3 {
+        font-size: 23px;
+        font-weight: 800;
+        margin-bottom: 7px;
+    }
+
+    .promotion-content p {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+
+    .promotion-content span {
+        display: inline-block;
+        background: #00864f;
+        color: white;
+        padding: 9px 18px;
+        border-radius: 25px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .promotion-pink .promotion-content span {
+        background: #e83e83;
+    }
+
+    @@media(max-width:768px) {
+        .promotion-card {
+            min-height: 145px;
+            padding: 18px;
+            gap: 12px;
+        }
+
+        .promotion-icon {
+            min-width: 65px;
+            height: 65px;
+            font-size: 43px;
+        }
+
+        .promotion-content h3 {
+            font-size: 18px;
+        }
+    }
+
+    @@media(max-width:768px) {
+        /* BANNER QUẢNG CÁO CHÍNH */
+        .hero-banner {
+            position: relative;
+            min-height: 320px;
+            border-radius: 20px;
+            overflow: hidden;
+            padding: 40px 45px;
+            color: white;
+            background: linear-gradient(110deg, #00864f, #19ae78);
+            display: flex;
+            align-items: center;
+            box-shadow: 0 8px 25px rgba(0, 120, 70, .15);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 58%;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: white;
+            color: #00864f;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .hero-banner h1 {
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 15px;
+        }
+
+        .hero-banner p {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            max-width: 500px;
+        }
+
+        .hero-button {
+            display: inline-block;
+            background: white;
+            color: #00864f;
+            padding: 13px 25px;
+            border-radius: 10px;
+            font-weight: 800;
+            transition: .25s;
+        }
+
+            .hero-button:hover {
+                background: #e9f8ef;
+                color: #006b42;
+                transform: translateY(-3px);
+            }
+
+        .hero-visual {
+            position: absolute;
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 38%;
+            height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-circle {
+            width: 245px;
+            height: 245px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.17);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            .hero-circle i {
+                font-size: 130px;
+                color: rgba(255,255,255,.85);
+            }
+
+        .hero-discount {
+            position: absolute;
+            right: 0;
+            top: 15%;
+            background: #ffdf45;
+            color: #006b42;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 900;
+            box-shadow: 0 5px 15px rgba(0,0,0,.12);
+            transform: rotate(5deg);
+        }
+
+        @@media(max-width:768px) {
+            .hero-banner {
+                min-height: 280px;
+                padding: 28px 22px;
+            }
+
+            .hero-content {
+                max-width: 100%;
+            }
+
+            .hero-banner h1 {
+                font-size: 27px;
+            }
+
+            .hero-banner p {
+                font-size: 14px;
+                max-width: 85%;
+            }
+
+            .hero-visual {
+                right: -45px;
+                opacity: .2;
+                width: 60%;
+            }
+
+            .hero-circle {
+                width: 190px;
+                height: 190px;
+            }
+
+                .hero-circle i {
+                    font-size: 100px;
+                }
+
+            .hero-discount {
+                display: none;
+            }
+        }
+
+        .product-image {
+            height: 145px;
+        }
+
+        .section-heading h3 {
+            font-size: 19px;
+        }
+    }
+</style>
+
+<!-- BANNER QUẢNG CÁO CHÍNH -->
+<section class="hero-banner mb-4">
+
+    <div class="hero-content">
+
+        <span class="hero-label">
+            CHĂM SÓC SỨC KHỎE MỖI NGÀY
+        </span>
+
+        <h1>
+            Chăm sóc sức khỏe
+            <br />
+            cho cả gia đình
+        </h1>
+
+        <p>
+            Khám phá các sản phẩm chăm sóc sức khỏe,
+            tìm hiểu thông tin thuốc và mua sắm tiện lợi
+            ngay tại nhà.
+        </p>
+
+        <a href="@Url.Action("Index", "SanPham")"
+           class="hero-button">
+
+            Mua ngay
+            <i class="fa-solid fa-arrow-right ms-2"></i>
+
+        </a>
+
+    </div>
+
+    <div class="hero-visual">
+
+        <div class="hero-circle">
+            <i class="fa-solid fa-house-medical"></i>
+        </div>
+
+    </div>
+
+</section>
+<!-- BANNER KHUYẾN MÃI -->
+<div class="row g-3 mb-5">
+
+    <div class="col-md-6">
+        <a href="@Url.Action("Index", "SanPham")"
+           class="promotion-card promotion-pink">
+
+            <div class="promotion-icon">
+                <i class="fa-solid fa-gift"></i>
+            </div>
+
+            <div class="promotion-content">
+                <h3>Ưu đãi hấp dẫn</h3>
+
+                <p>
+                    Sức khỏe tốt hơn - Cuộc sống vui hơn
+                </p>
+
+                <span>
+                    Mua ngay
+                    <i class="fa-solid fa-arrow-right ms-2"></i>
+                </span>
+            </div>
+
+        </a>
+    </div>
+
+    <div class="col-md-6">
+        <a href="@Url.Action("Index", "SanPham")"
+           class="promotion-card promotion-green">
+
+            <div class="promotion-icon">
+                <i class="fa-solid fa-leaf"></i>
+            </div>
+
+            <div class="promotion-content">
+                <h3>Khuyến mãi đặc biệt</h3>
+
+                <p>
+                    Tiết kiệm hơn - Khỏe mạnh hơn
+                </p>
+
+                <span>
+                    Khám phá ngay
+                    <i class="fa-solid fa-arrow-right ms-2"></i>
+                </span>
+            </div>
+
+        </a>
+    </div>
+
+</div>
+
+<!-- DỊCH VỤ -->
+<div class="row g-3 mb-5">
+    <div class="col-6 col-md-3">
+        <div class="service-card">
+            <i class="fa-solid fa-shield-heart"></i>
+            <h6>Sản phẩm rõ nguồn gốc</h6>
+            <p>Thông tin sản phẩm minh bạch</p>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <div class="service-card">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <h6>Đặt hàng tiện lợi</h6>
+            <p>Thao tác mua hàng đơn giản</p>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <div class="service-card">
+            <i class="fa-solid fa-user-doctor"></i>
+            <h6>Hỗ trợ khách hàng</h6>
+            <p>Hỗ trợ thông tin sản phẩm</p>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+        <div class="service-card">
+            <i class="fa-solid fa-heart-pulse"></i>
+            <h6>Quan tâm sức khỏe</h6>
+            <p>Chăm sóc sức khỏe gia đình</p>
+        </div>
+    </div>
+</div>
+
+<!-- DANH MỤC -->
+<section class="mb-5">
+    <div class="section-heading">
+        <h3>
+            <i class="fa-solid fa-layer-group me-2 text-success"></i>
+            Danh mục sản phẩm
+        </h3>
+    </div>
+
+    <div class="row g-3">
+        @foreach (var dm in Model.DanhSachDanhMuc)
+        {
+            <div class="col-6 col-md-3">
+                <a href="@Url.Action("Index", "SanPham",
+                         new { maDanhMuc = dm.MaDanhMuc })"
+                   class="category-card">
+
+                    <div class="category-icon">
+                        @if (dm.MaDanhMuc == 1)
+                        {
+                            <i class="fa-solid fa-capsules"></i>
+                        }
+                        else if (dm.MaDanhMuc == 2)
+                        {
+                            <i class="fa-solid fa-prescription-bottle-medical"></i>
+                        }
+                        else if (dm.MaDanhMuc == 3)
+                        {
+                            <i class="fa-solid fa-hand-dots"></i>
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-leaf"></i>
+                        }
+                    </div>
+
+                    <div class="category-name">
+                        @dm.TenDanhMuc
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- SẢN PHẨM -->
+<section class="mb-5">
+    <div class="section-heading">
+        <h3>
+            <i class="fa-solid fa-star me-2 text-warning"></i>
+            Sản phẩm nổi bật
+        </h3>
+
+        <a href="@Url.Action("Index", "SanPham")">
+            Xem tất cả
+            <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row g-3">
+        @foreach (var thuoc in Model.DanhSachThuoc)
+        {
+            <div class="col-6 col-md-3">
+                <div class="product-card">
+
+                    <div class="product-image">
+                        @if (!string.IsNullOrEmpty(thuoc.AnhThuoc))
+                        {
+                            <img src="@Url.Content(thuoc.AnhThuoc)"
+                                 alt="@thuoc.TenThuoc" />
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-pills product-placeholder"></i>
+                        }
+                    </div>
+
+                    <div class="product-info">
+
+                        <div class="product-name">
+                            @thuoc.TenThuoc
+                        </div>
+
+                        <div class="product-unit">
+                            Đơn vị: @thuoc.DonViTinh
+                        </div>
+
+                        <div class="product-price">
+                            @thuoc.GiaBan.ToString("N0") đ
+                        </div>
+
+                        @if (thuoc.SoLuongTon > 0)
+                        {
+                            <div class="product-stock">
+                                <i class="fa-solid fa-circle-check me-1"></i>
+                                Còn hàng
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-danger small mb-3">
+                                Tạm hết hàng
+                            </div>
+                        }
+
+                        <a href="@Url.Action("Details", "SanPham",
+                                 new { id = thuoc.MaThuoc })"
+                           class="btn-product">
+                            Xem chi tiết
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- CAM KẾT -->
+<section class="text-center py-4 mb-3"
+         style="background:#eaf8f1;border-radius:14px">
+
+    <h4 class="fw-bold text-success">
+        Sức khỏe của bạn là ưu tiên của chúng tôi
+    </h4>
+
+    <p class="mb-0 text-secondary">
+        Cung cấp thông tin sản phẩm rõ ràng và hỗ trợ khách hàng tận tình.
+    </p>
+
+</section>

@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "Trang chủ";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="welcome">
+
+    <h1>
+        Hệ thống quản lý quầy thuốc
+    </h1>
+
+    <p>
+        Xin chào @Session["userName"].
+        Chúc bạn một ngày làm việc hiệu quả.
+    </p>
+
+</div>
+
+
+<div class="section-header">
+
+    <div>
+
+        <div class="section-title">
+            Truy cập nhanh
+        </div>
+
+        <div class="section-description">
+            Các chức năng thường xuyên sử dụng
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="functions">
+
+
+    <a href="@Url.Action("Index","Admin")"
+       class="function">
+
+        <div class="function-icon">
+            ⚙
+        </div>
+
+        <h3>
+            Quản trị hệ thống
+        </h3>
+
+        <p>
+            Quản lý toàn bộ hệ thống
+            và các chức năng quản trị.
+        </p>
+
+    </a>
+
+
+    <a href="@Url.Action("Index","TaiKhoan")"
+       class="function">
+
+        <div class="function-icon">
+            👤
+        </div>
+
+        <h3>
+            Tài khoản & phân quyền
+        </h3>
+
+        <p>
+            Quản lý tài khoản,
+            vai trò và quyền truy cập.
+        </p>
+
+    </a>
+
+
+    <a href="#"
+       class="function">
+
+        <div class="function-icon">
+            📦
+        </div>
+
+        <h3>
+            Quản lý kho
+        </h3>
+
+        <p>
+            Theo dõi thuốc và
+            số lượng tồn kho.
+        </p>
+
+    </a>
+
+
+</div>

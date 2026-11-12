@@ -1,0 +1,438 @@
+﻿
+@model WebApplication1.Models.ViewModels.QuanLyDonHangViewModel
+
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .order-management {
+        padding: 25px 0;
+    }
+
+    .page-heading {
+        font-weight: 700;
+        color: #263238;
+    }
+
+    .stat-card {
+        background: #fff;
+        border: 1px solid #edf0f2;
+        border-radius: 13px;
+        padding: 20px;
+        height: 100%;
+        box-shadow: 0 3px 12px rgba(0,0,0,.035);
+    }
+
+    .stat-label {
+        color: #6c757d;
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .stat-number {
+        font-size: 26px;
+        font-weight: 700;
+        color: #263238;
+    }
+
+    .stat-icon {
+        width: 43px;
+        height: 43px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 19px;
+    }
+
+    .filter-card,
+    .table-card {
+        background: #fff;
+        border: 1px solid #edf0f2;
+        border-radius: 13px;
+        padding: 22px;
+        box-shadow: 0 3px 12px rgba(0,0,0,.035);
+    }
+
+        .filter-card .form-control,
+        .filter-card .form-select {
+            min-height: 42px;
+        }
+
+    .order-table th {
+        background: #f5f7f9;
+        color: #495057;
+        white-space: nowrap;
+        font-size: 13px;
+    }
+
+    .order-table td {
+        vertical-align: middle;
+        font-size: 14px;
+    }
+
+    .order-code {
+        color: #198754;
+        font-weight: 700;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-confirmed {
+        background: #cfe2ff;
+        color: #084298;
+    }
+
+    .status-shipping {
+        background: #cff4fc;
+        color: #055160;
+    }
+
+    .status-delivered {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .status-cancelled {
+        background: #f8d7da;
+        color: #842029;
+    }
+</style>
+
+<div class="container-fluid order-management">
+
+    <!-- TIÊU ĐỀ -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+        <div>
+            <h3 class="page-heading mb-1">
+                <i class="fa-solid fa-receipt text-success me-2"></i>
+                Quản lý đơn hàng
+            </h3>
+
+            <p class="text-muted mb-0">
+                Theo dõi, tìm kiếm và quản lý đơn hàng của khách hàng.
+            </p>
+        </div>
+
+        <a href="@Url.Action("Index", "Home")"
+           class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            Quay lại
+        </a>
+
+    </div>
+
+    <!-- THỐNG KÊ -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Tổng đơn hàng</div>
+                        <div class="stat-number">@Model.TongDonHang</div>
+                    </div>
+
+                    <div class="stat-icon bg-primary-subtle text-primary">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Chờ xác nhận</div>
+                        <div class="stat-number">@Model.DonChoXacNhan</div>
+                    </div>
+
+                    <div class="stat-icon bg-warning-subtle text-warning">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Đã xác nhận</div>
+                        <div class="stat-number">@Model.DonDaXacNhan</div>
+                    </div>
+
+                    <div class="stat-icon bg-primary-subtle text-primary">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Đang giao</div>
+                        <div class="stat-number">@Model.DonDangGiao</div>
+                    </div>
+
+                    <div class="stat-icon bg-info-subtle text-info">
+                        <i class="fa-solid fa-truck"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Đã giao</div>
+                        <div class="stat-number">@Model.DonDaGiao</div>
+                    </div>
+
+                    <div class="stat-icon bg-success-subtle text-success">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="stat-label">Doanh thu đã giao</div>
+                        <div class="stat-number fs-5">
+                            @Model.TongDoanhThu.ToString("N0")
+                            <small class="fs-6">đ</small>
+                        </div>
+                    </div>
+
+                    <div class="stat-icon bg-success-subtle text-success">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BỘ LỌC -->
+    <div class="filter-card mb-4">
+
+        <h5 class="fw-bold mb-3">
+            <i class="fa-solid fa-filter text-success me-2"></i>
+            Tìm kiếm và lọc đơn hàng
+        </h5>
+
+        @using (Html.BeginForm("Index", "QuanLyDonHang", FormMethod.Get))
+        {
+            <div class="row g-3">
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-semibold">
+                        Từ khóa
+                    </label>
+
+                    @Html.TextBoxFor(m => m.TuKhoa, new
+                    {
+                        @class = "form-control",
+                        placeholder = "Mã đơn, tên, số điện thoại"
+                    })
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-semibold">
+                        Trạng thái
+                    </label>
+
+                    @Html.DropDownListFor(m => m.TrangThai,
+                        new List<SelectListItem>
+                        {
+                            new SelectListItem { Text = "Tất cả trạng thái", Value = "" },
+                            new SelectListItem { Text = "Chờ xác nhận", Value = "Chờ xác nhận" },
+                            new SelectListItem { Text = "Đã xác nhận", Value = "Đã xác nhận" },
+                            new SelectListItem { Text = "Đang giao hàng", Value = "Đang giao hàng" },
+                            new SelectListItem { Text = "Đã giao hàng", Value = "Đã giao hàng" },
+                            new SelectListItem { Text = "Đã hủy", Value = "Đã hủy" }
+                        },
+                        new { @class = "form-select" })
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label fw-semibold">
+                        Từ ngày
+                    </label>
+
+                    @Html.TextBoxFor(m => m.TuNgay, "{0:yyyy-MM-dd}",
+                        new { @class = "form-control", type = "date" })
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <label class="form-label fw-semibold">
+                        Đến ngày
+                    </label>
+
+                    @Html.TextBoxFor(m => m.DenNgay, "{0:yyyy-MM-dd}",
+                        new { @class = "form-control", type = "date" })
+                </div>
+
+                <div class="col-lg-2 d-flex align-items-end gap-2">
+
+                    <button type="submit" class="btn btn-success flex-grow-1">
+                        <i class="fa-solid fa-search me-1"></i>
+                        Lọc
+                    </button>
+
+                    <a href="@Url.Action("Index", "QuanLyDonHang")"
+                       class="btn btn-outline-secondary"
+                       title="Làm mới">
+                        <i class="fa-solid fa-rotate"></i>
+                    </a>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+    <!-- BẢNG ĐƠN HÀNG -->
+    <div class="table-card">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+
+            <h5 class="fw-bold mb-0">
+                <i class="fa-solid fa-list text-success me-2"></i>
+                Danh sách đơn hàng
+            </h5>
+
+            <span class="text-muted">
+                Tìm thấy @Model.DanhSachDonHang.Count đơn hàng
+            </span>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover order-table">
+
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Số điện thoại</th>
+                        <th>Ngày đặt</th>
+                        <th class="text-end">Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model.DanhSachDonHang.Count > 0)
+                    {
+                        foreach (var donHang in Model.DanhSachDonHang)
+                        {
+                            string trangThaiClass = "status-pending";
+
+                            if (donHang.TrangThai == "Đã xác nhận")
+                            {
+                                trangThaiClass = "status-confirmed";
+                            }
+                            else if (donHang.TrangThai == "Đang giao hàng")
+                            {
+                                trangThaiClass = "status-shipping";
+                            }
+                            else if (donHang.TrangThai == "Đã giao hàng")
+                            {
+                                trangThaiClass = "status-delivered";
+                            }
+                            else if (donHang.TrangThai == "Đã hủy")
+                            {
+                                trangThaiClass = "status-cancelled";
+                            }
+
+                            <tr>
+                                <td>
+                                    <span class="order-code">
+                                        DH@(donHang.MaDonHang.ToString("D5"))
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(donHang.KhachHang != null
+                                        ? donHang.KhachHang.HoTen : "Khách hàng")
+                                </td>
+
+                                <td>
+                                    @(donHang.KhachHang != null
+                                        ? donHang.KhachHang.SoDienThoai : "")
+                                </td>
+
+                                <td>
+                                    @donHang.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td class="text-end fw-semibold">
+                                    @donHang.TongTien.ToString("N0") đ
+                                </td>
+
+                                <td>
+                                    <span class="status-badge @trangThaiClass">
+                                        @donHang.TrangThai
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <a href="@Url.Action("Details", "QuanLyDonHang",
+    new { id = donHang.MaDonHang })"
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fa-solid fa-eye me-1"></i>
+                                        Xem chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="fa-solid fa-inbox fs-1 text-muted"></i>
+
+                                <p class="text-muted mt-3 mb-0">
+                                    Không tìm thấy đơn hàng phù hợp.
+                                </p>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

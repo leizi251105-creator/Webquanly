@@ -1,0 +1,472 @@
+﻿
+@model IEnumerable<WebApplication1.Models.Thuoc>
+
+@{
+    ViewBag.Title = "Danh mục thuốc";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .medicine-page {
+        padding: 25px;
+        background: #f5f7fb;
+        min-height: calc(100vh - 80px);
+    }
+
+    .medicine-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 22px;
+    }
+
+        .medicine-header h2 {
+            margin: 0 0 7px;
+            color: #1f2937;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .medicine-header p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+    .medicine-search {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        background: #fff;
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+
+        .medicine-search input {
+            flex: 1;
+            min-width: 220px;
+            height: 43px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0 13px;
+        }
+
+    .medicine-table-box {
+        background: #fff;
+        border-radius: 12px;
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+
+    .medicine-table {
+        width: 100%;
+        min-width: 1320px;
+        border-collapse: collapse;
+    }
+
+        .medicine-table th {
+            padding: 15px 12px;
+            background: #f8fafc;
+            color: #374151;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .medicine-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #eef0f3;
+            color: #374151;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .medicine-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+    .medicine-code {
+        color: #2563eb !important;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .medicine-price {
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .medicine-status {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .medicine-active {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .medicine-inactive {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .medicine-low {
+        color: #dc2626;
+        font-weight: 700;
+    }
+
+    .medicine-normal {
+        color: #15803d;
+        font-weight: 600;
+    }
+
+    .medicine-actions {
+        min-width: 205px;
+        white-space: nowrap;
+    }
+
+        .medicine-actions .btn {
+            margin: 2px 3px 2px 0;
+        }
+
+    .medicine-footer {
+        margin-top: 15px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .medicine-empty {
+        padding: 35px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .medicine-notice {
+        border-radius: 10px;
+        margin-bottom: 18px;
+    }
+
+    @@media (max-width: 768px) {
+        .medicine-page {
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="medicine-page">
+
+    <!-- TIÊU ĐỀ TRANG -->
+    <div class="medicine-header">
+        <div>
+            <h2>
+                <i class="fa-solid fa-capsules text-primary"></i>
+                Danh mục thuốc
+            </h2>
+            <p>Tra cứu thông tin thuốc và theo dõi số lượng tồn kho.</p>
+        </div>
+    </div>
+
+    <!-- THÔNG BÁO THÊM, SỬA HOẶC NGỪNG KINH DOANH -->
+    @if (TempData["ThongBao"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show medicine-notice"
+             role="alert">
+            <i class="fa-solid fa-circle-check"></i>
+            @TempData["ThongBao"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Đóng">
+            </button>
+        </div>
+    }
+
+    <!-- KHU VỰC TÌM KIẾM VÀ THÊM THUỐC -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="d-flex flex-wrap align-items-center gap-2">
+
+                @using (Html.BeginForm(
+                    "Index",
+                    "Thuoc",
+                    FormMethod.Get,
+                    new
+                    {
+                        @class = "d-flex flex-grow-1 gap-2",
+                        style = "min-width:300px;"
+                    }))
+                {
+                    <input type="text"
+                           name="search"
+                           value="@ViewBag.Search"
+                           class="form-control"
+                           placeholder="Nhập mã thuốc hoặc tên thuốc..."
+                           aria-label="Tìm kiếm thuốc" />
+
+                    <button type="submit"
+                            class="btn btn-primary text-nowrap">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        Tìm kiếm
+                    </button>
+
+                    <a href="@Url.Action("Index", "Thuoc")"
+                       class="btn btn-outline-secondary text-nowrap">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        Làm mới
+                    </a>
+                }
+
+                <a href="@Url.Action("Create", "Thuoc")"
+                   class="btn btn-success text-nowrap">
+                    <i class="fa-solid fa-plus"></i>
+                    Thêm thuốc
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- BẢNG DANH SÁCH THUỐC -->
+    <div class="medicine-table-box">
+        <table class="medicine-table">
+            <thead>
+                <tr>
+                    <th>Mã thuốc</th>
+                    <th>Tên thuốc</th>
+                    <th>Mã danh mục</th>
+                    <th>Đơn vị tính</th>
+                    <th>Hoạt chất</th>
+                    <th>Hàm lượng</th>
+                    <th>Giá nhập</th>
+                    <th>Giá bán</th>
+                    <th>Tồn kho</th>
+                    <th>Số lô / Hạn sử dụng</th>
+                    <th>Trạng thái</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <!-- MÃ THUỐC -->
+                            <td class="medicine-code">
+                                TH@(item.MaThuoc.ToString("D5"))
+                            </td>
+
+                            <!-- TÊN THUỐC -->
+                            <td>
+                                <strong>@item.TenThuoc</strong>
+                            </td>
+
+                            <!-- DANH MỤC -->
+                            <td>@item.MaDanhMuc</td>
+
+                            <!-- ĐƠN VỊ TÍNH -->
+                            <td>@item.DonViTinh</td>
+
+                            <!-- HOẠT CHẤT -->
+                            <td>
+                                @(string.IsNullOrWhiteSpace(item.HoatChat)
+                                    ? "—"
+                                    : item.HoatChat)
+                            </td>
+
+                            <!-- HÀM LƯỢNG -->
+                            <td>
+                                @(string.IsNullOrWhiteSpace(item.HamLuong)
+                                    ? "—"
+                                    : item.HamLuong)
+                            </td>
+
+                            <!-- GIÁ NHẬP -->
+                            <td class="medicine-price">
+                                @item.GiaNhap.ToString("N0") đ
+                            </td>
+
+                            <!-- GIÁ BÁN -->
+                            <td class="medicine-price">
+                                @item.GiaBan.ToString("N0") đ
+                            </td>
+
+                            <!-- TỒN KHO -->
+                            <td>
+                                @if (item.SoLuongTon <= item.MucTonToiThieu)
+                                {
+                                    <span class="medicine-low">
+                                        @item.SoLuongTon
+                                        (Tồn thấp)
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="medicine-normal">
+                                        @item.SoLuongTon
+                                    </span>
+                                }
+                            </td>
+
+                            <!-- SỐ LÔ VÀ HẠN SỬ DỤNG -->
+                            <td>
+                                @{
+                                    var cacLo = item.LoThuocs
+                                        .Where(l => l.TrangThai == true && l.SoLuong > 0)
+                                        .OrderBy(l => l.HanSuDung)
+                                        .ToList();
+                                }
+
+                                @if (cacLo.Any())
+                                {
+                                    foreach (var lo in cacLo)
+                                    {
+                                        <div class="mb-2">
+                                            <span class="badge bg-light text-dark border">
+                                                @lo.SoLo
+                                            </span>
+                                            <div class="small text-muted mt-1">
+                                                HSD: @lo.HanSuDung.ToString("dd/MM/yyyy")
+                                            </div>
+                                            <div class="small">
+                                                Số lượng lô: @lo.SoLuong
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Chưa có lô còn hàng</span>
+                                }
+                            </td>
+
+
+                            <!-- TRẠNG THÁI -->
+                            <td>
+
+                                @if (item.TrangThai)
+                                {
+                                    using (Html.BeginForm(
+                                        "NgungKinhDoanh",
+                                        "Thuoc",
+                                        new { id = item.MaThuoc },
+                                        FormMethod.Post,
+                                        new { style = "display:inline-block;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Bạn có chắc muốn ngừng kinh doanh thuốc này?');">
+                                            <i class="fa-solid fa-ban"></i>
+                                            Ngừng KD
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    using (Html.BeginForm(
+                                        "KinhDoanhLai",
+                                        "Thuoc",
+                                        new { id = item.MaThuoc },
+                                        FormMethod.Post,
+                                        new { style = "display:inline-block;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-success"
+                                                onclick="return confirm('Bạn có chắc muốn kinh doanh lại thuốc này?');">
+                                            <i class="fa-solid fa-rotate-left"></i>
+                                            Kinh doanh lại
+                                        </button>
+                                    }
+                                }
+
+                            </td>
+
+                            <!-- CÁC NÚT THAO TÁC -->
+                            <td class="medicine-actions">
+
+                                <!-- NÚT SỬA -->
+                                <a href="@Url.Action(
+                                    "Edit",
+                                    "Thuoc",
+                                    new { id = item.MaThuoc })"
+                                   class="btn btn-sm btn-primary"
+                                   title="Sửa thông tin thuốc">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    Sửa
+                                </a>
+
+                                <!-- NÚT NGỪNG KINH DOANH -->
+                                @if (item.TrangThai)
+                                {
+                                    using (Html.BeginForm(
+                                        "NgungKinhDoanh",
+                                        "Thuoc",
+                                        new { id = item.MaThuoc },
+                                        FormMethod.Post,
+                                        new { style = "display:inline-block;" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                title="Ngừng kinh doanh thuốc"
+                                                onclick="return confirm('Bạn có chắc chắn muốn ngừng kinh doanh thuốc @item.TenThuoc không?');">
+                                            <i class="fa-solid fa-ban"></i>
+                                            Ngừng KD
+                                        </button>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">
+                                        <i class="fa-solid fa-lock"></i>
+                                        Đã ngừng
+                                    </span>
+                                }
+
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="12">
+                            <div class="medicine-empty">
+                                <i class="fa-solid fa-box-open fa-2x mb-3"></i>
+                                <p class="mb-1">
+                                    <strong>Không tìm thấy thuốc phù hợp.</strong>
+                                </p>
+                                <p class="mb-0">
+                                    Hãy kiểm tra từ khóa hoặc nhấn Làm mới để xem toàn bộ danh sách.
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- THỐNG KÊ CUỐI TRANG -->
+    <div class="medicine-footer">
+        Tổng số thuốc hiển thị:
+        <strong>@(Model == null ? 0 : Model.Count())</strong>
+    </div>
+
+</div>

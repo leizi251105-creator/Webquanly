@@ -1,0 +1,268 @@
+﻿
+@model WebApplication1.Models.ViewModels.DatHangViewModel
+
+@{
+    ViewBag.Title = "Thông tin đặt hàng";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    .checkout-title {
+        font-weight: 800;
+        color: #183b2b;
+    }
+
+    .checkout-card {
+        background: #fff;
+        border: 1px solid #e9eeee;
+        border-radius: 16px;
+        padding: 25px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.04);
+        margin-bottom: 22px;
+    }
+
+        .checkout-card h5 {
+            font-weight: 750;
+            color: #214d37;
+            margin-bottom: 22px;
+        }
+
+    .checkout-label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #34443b;
+    }
+
+    .checkout-input {
+        min-height: 46px;
+        border-radius: 9px;
+    }
+
+        .checkout-input:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 .2rem rgba(25,135,84,.12);
+        }
+
+    .product-thumb {
+        width: 65px;
+        height: 65px;
+        object-fit: contain;
+        border-radius: 10px;
+        border: 1px solid #eee;
+        padding: 5px;
+    }
+
+    .checkout-total {
+        color: #198754;
+        font-size: 23px;
+        font-weight: 800;
+    }
+
+    .btn-checkout {
+        background: #198754;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 13px 20px;
+        font-weight: 700;
+        width: 100%;
+    }
+
+        .btn-checkout:hover {
+            background: #146c43;
+            color: white;
+        }
+
+    .required-star {
+        color: #dc3545;
+    }
+</style>
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <a href="@Url.Action("Index", "GioHang")"
+           class="text-decoration-none text-success">
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            Quay lại giỏ hàng
+        </a>
+
+        <h2 class="checkout-title mt-3">
+            <i class="fa-solid fa-clipboard-list me-2"></i>
+            Thông tin đặt hàng
+        </h2>
+
+        <p class="text-muted">
+            Vui lòng cung cấp thông tin nhận hàng để hoàn tất đơn hàng.
+        </p>
+    </div>
+
+    @using (Html.BeginForm("XacNhan", "DatHang",
+        FormMethod.Post, new { @class = "row g-4" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="col-lg-7">
+
+            <div class="checkout-card">
+                <h5>
+                    <i class="fa-solid fa-user me-2"></i>
+                    Thông tin người nhận
+                </h5>
+
+                <div class="mb-3">
+                    <label class="checkout-label">
+                        Họ và tên <span class="required-star">*</span>
+                    </label>
+                    @Html.TextBoxFor(m => m.HoTen,
+                        new
+                             {
+                                 @class = "form-control checkout-input",
+                              placeholder = "Nhập họ và tên người nhận"
+                             })
+                    @Html.ValidationMessageFor(m => m.HoTen, "",
+                        new { @class = "text-danger small" })
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="checkout-label">
+                            Số điện thoại <span class="required-star">*</span>
+                        </label>
+                        @Html.TextBoxFor(m => m.SoDienThoai,
+                            new
+                                 {
+                                     @class = "form-control checkout-input",
+                                  placeholder = "Nhập số điện thoại",
+                                  type = "tel"
+                                 })
+                        @Html.ValidationMessageFor(m => m.SoDienThoai, "",
+                            new { @class = "text-danger small" })
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="checkout-label">Email</label>
+                        @Html.TextBoxFor(m => m.Email,
+                            new
+                                 {
+                                     @class = "form-control checkout-input",
+                                  placeholder = "Nhập email",
+                                  type = "email"
+                                 })
+                        @Html.ValidationMessageFor(m => m.Email, "",
+                            new { @class = "text-danger small" })
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="checkout-label">
+                        Địa chỉ nhận hàng <span class="required-star">*</span>
+                    </label>
+                    @Html.TextAreaFor(m => m.DiaChi,
+                        new
+                             {
+                                 @class = "form-control",
+                              rows = "3",
+                              placeholder = "Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                             })
+                    @Html.ValidationMessageFor(m => m.DiaChi, "",
+                        new { @class = "text-danger small" })
+                </div>
+
+                <div class="mb-2">
+                    <label class="checkout-label">Ghi chú đơn hàng</label>
+                    @Html.TextAreaFor(m => m.GhiChu,
+                        new
+                             {
+                                 @class = "form-control",
+                              rows = "3",
+                              placeholder = "Ví dụ: Giao hàng giờ hành chính..."
+                             })
+                </div>
+            </div>
+
+            <div class="checkout-card">
+                <h5>
+                    <i class="fa-solid fa-truck-fast me-2"></i>
+                    Phương thức thanh toán
+                </h5>
+
+                <div class="border rounded-3 p-3">
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-money-bill-wave text-success fs-4 me-3"></i>
+                        <div>
+                            <strong>Thanh toán khi nhận hàng (COD)</strong>
+                            <div class="text-muted small">
+                                Khách hàng thanh toán khi nhận được sản phẩm.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-5">
+
+            <div class="checkout-card">
+                <h5>
+                    <i class="fa-solid fa-bag-shopping me-2"></i>
+                    Đơn hàng của bạn
+                </h5>
+
+                @foreach (var item in Model.DanhSachSanPham)
+                {
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        @if (!string.IsNullOrEmpty(item.AnhThuoc))
+                        {
+                            <img src="@Url.Content(item.AnhThuoc)"
+                                 class="product-thumb" />
+                        }
+                        else
+                        {
+                            <div class="product-thumb d-flex align-items-center justify-content-center">
+                                <i class="fa-solid fa-pills text-success fs-3"></i>
+                            </div>
+                        }
+
+                        <div class="flex-grow-1">
+                            <div class="fw-bold">@item.TenThuoc</div>
+                            <small class="text-muted">
+                                @item.SoLuong @item.DonViTinh
+                                × @item.DonGia.ToString("N0") đ
+                            </small>
+                        </div>
+
+                        <strong>
+                            @item.ThanhTien.ToString("N0") đ
+                        </strong>
+                    </div>
+
+                    <hr />
+                }
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Tổng số lượng</span>
+                    <strong>@Model.TongSoLuong sản phẩm</strong>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <span class="fw-bold">Tổng thanh toán</span>
+                    <span class="checkout-total">
+                        @Model.TongTien.ToString("N0") đ
+                    </span>
+                </div>
+
+                <button type="submit" class="btn-checkout mt-4">
+                    <i class="fa-solid fa-check-circle me-2"></i>
+                    Xác nhận đặt hàng
+                </button>
+
+                <p class="text-muted small text-center mt-3 mb-0">
+                    Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.
+                </p>
+            </div>
+
+        </div>
+    }
+</div>

@@ -1,0 +1,380 @@
+﻿
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Nhà thuốc của bạn</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        :root {
+            --green: #00864f;
+            --green-dark: #006b40;
+            --green-light: #eaf8f1;
+            --text: #263238;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f5f7f8;
+            font-family: Arial, sans-serif;
+            color: var(--text);
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .top-information {
+            background: var(--green-dark);
+            color: white;
+            font-size: 13px;
+            padding: 9px 0;
+        }
+
+        .main-header {
+            background: white;
+            padding: 17px 0;
+            box-shadow: 0 3px 12px rgba(0,0,0,.05);
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--green);
+            font-size: 27px;
+            font-weight: 800;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+
+            .brand-logo:hover {
+                color: var(--green-dark);
+            }
+
+        .brand-icon {
+            font-size: 43px;
+        }
+
+        .brand-slogan {
+            display: block;
+            color: #64756d;
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        .search-box {
+            display: flex;
+            height: 50px;
+            border: 2px solid var(--green);
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            transition: .2s;
+        }
+
+            .search-box:focus-within {
+                box-shadow: 0 0 0 4px rgba(0,134,79,.10);
+            }
+
+            .search-box input {
+                flex: 1;
+                min-width: 0;
+                border: none;
+                outline: none;
+                padding: 0 18px;
+                font-size: 15px;
+            }
+
+            .search-box button {
+                border: none;
+                background: var(--green);
+                color: white;
+                padding: 0 23px;
+                font-weight: 600;
+            }
+
+                .search-box button:hover {
+                    background: var(--green-dark);
+                }
+
+        .header-action {
+            position: relative;
+            min-width: 65px;
+            color: #263238;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            transition: .2s;
+        }
+
+            .header-action i {
+                display: block;
+                color: var(--green);
+                font-size: 25px;
+                margin-bottom: 6px;
+            }
+
+            .header-action:hover {
+                color: var(--green);
+            }
+
+        .main-navigation {
+            background: var(--green);
+            box-shadow: 0 3px 8px rgba(0,0,0,.08);
+        }
+
+            .main-navigation .container {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+            }
+
+            .main-navigation a {
+                display: inline-block;
+                color: white;
+                padding: 15px 17px;
+                font-size: 14px;
+                font-weight: 600;
+                white-space: nowrap;
+                transition: .2s;
+            }
+
+                .main-navigation a:hover,
+                .main-navigation a.active {
+                    background: var(--green-dark);
+                }
+
+        .page-content {
+            min-height: 550px;
+            padding: 25px 0 50px;
+        }
+
+        .footer {
+            background: #073d2c;
+            color: white;
+            padding: 42px 0 20px;
+        }
+
+            .footer h5 {
+                font-weight: 700;
+                margin-bottom: 17px;
+            }
+
+            .footer p, .footer a {
+                color: #d3e4dc;
+                font-size: 14px;
+                line-height: 1.9;
+            }
+
+            .footer a {
+                display: block;
+                margin-bottom: 7px;
+            }
+
+                .footer a:hover {
+                    color: white;
+                }
+
+        .footer-brand {
+            color: white;
+            font-size: 25px;
+            font-weight: 800;
+        }
+
+        @@media (max-width: 768px) {
+            .main-header {
+                padding: 12px 0;
+            }
+
+            .brand-logo {
+                font-size: 20px;
+            }
+
+            .brand-icon {
+                font-size: 32px;
+            }
+
+            .brand-slogan {
+                font-size: 10px;
+            }
+
+            .search-box {
+                height: 43px;
+            }
+
+            .main-navigation {
+                overflow-x: auto;
+            }
+
+                .main-navigation .container {
+                    flex-wrap: nowrap;
+                    width: max-content;
+                    margin-left: 0;
+                }
+
+                .main-navigation a {
+                    padding: 13px 12px;
+                }
+
+            .page-content {
+                padding-top: 15px;
+            }
+        }
+    </style>
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+
+    <div class="top-information">
+        <div class="container d-flex justify-content-between flex-wrap gap-2">
+            <span>
+                <i class="fa-solid fa-truck-fast me-2"></i>
+                Đặt hàng trực tuyến - Tiện lợi mỗi ngày
+            </span>
+            <span>
+                <i class="fa-solid fa-headset me-2"></i>
+                Hỗ trợ khách hàng
+            </span>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <div class="container">
+            <div class="row align-items-center g-3">
+
+                <div class="col-lg-3 col-6">
+                    <a href="@Url.Action("Index", "Customer")" class="brand-logo">
+                        <i class="fa-solid fa-house-medical brand-icon"></i>
+                        <span>
+                            NHÀ THUỐC
+                            <small class="brand-slogan">Vì sức khỏe của bạn</small>
+                        </span>
+                    </a>
+                </div>
+
+                <div class="col-lg-6 col-12 order-3 order-lg-2">
+                    <form action="@Url.Action("Index", "SanPham")"
+                          method="get" class="search-box">
+                        <input type="text"
+                               name="tuKhoa"
+                               placeholder="Tìm tên thuốc, hoạt chất, sản phẩm..." />
+                        <button type="submit">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i>
+                            Tìm kiếm
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-lg-3 col-6 order-2 order-lg-3">
+                    <div class="d-flex justify-content-end gap-3 gap-md-4">
+
+                        <a href="@Url.Action("Index", "GioHang")"
+                           class="header-action">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            Giỏ hàng
+                        </a>
+
+                        <a href="@Url.Action("Index", "Login")"
+                           class="header-action">
+                            <i class="fa-solid fa-circle-user"></i>
+                            Tài khoản
+                        </a>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-navigation">
+        <div class="container">
+
+            <a href="@Url.Action("Index", "Customer")">
+                <i class="fa-solid fa-house me-2"></i>Trang chủ
+            </a>
+
+            <a href="@Url.Action("Index", "SanPham")">
+                <i class="fa-solid fa-pills me-2"></i>Sản phẩm
+            </a>
+
+            <a href="@Url.Action("Index", "GioHang")">
+                <i class="fa-solid fa-cart-shopping me-2"></i>Giỏ hàng
+            </a>
+
+            <a href="@Url.Action("LichSu", "DonHang")">
+                <i class="fa-solid fa-box me-2"></i>Đơn hàng của tôi
+            </a>
+
+            <a href="@Url.Action("Index", "TraCuuDonHang")">
+                <i class="fa-solid fa-magnifying-glass me-2"></i>Tra cứu đơn hàng
+            </a>
+
+        </div>
+    </nav>
+
+    <main class="page-content">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="footer-brand mb-3">
+                        <i class="fa-solid fa-house-medical me-2"></i>
+                        NHÀ THUỐC
+                    </div>
+                    <p>
+                        Hệ thống nhà thuốc trực tuyến cung cấp thông tin
+                        sản phẩm và hỗ trợ khách hàng mua sắm thuận tiện.
+                    </p>
+                </div>
+
+                <div class="col-md-4">
+                    <h5>Hỗ trợ khách hàng</h5>
+                    <a href="#">Hướng dẫn mua hàng</a>
+                    <a href="#">Chính sách giao hàng</a>
+                    <a href="#">Chính sách đổi trả</a>
+                    <a href="#">Câu hỏi thường gặp</a>
+                </div>
+
+                <div class="col-md-4">
+                    <h5>Thông tin liên hệ</h5>
+                    <p><i class="fa-solid fa-phone me-2"></i>Hotline: 1900 xxxx</p>
+                    <p><i class="fa-solid fa-envelope me-2"></i>Email: nhathuoc@example.com</p>
+                    <p><i class="fa-solid fa-location-dot me-2"></i>Địa chỉ: Việt Nam</p>
+                </div>
+
+            </div>
+
+            <hr style="border-color:rgba(255,255,255,.2)" />
+
+            <div class="text-center small">
+                © @DateTime.Now.Year Nhà thuốc. Website quản lý và bán thuốc trực tuyến.
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

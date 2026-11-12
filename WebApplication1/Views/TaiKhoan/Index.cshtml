@@ -1,0 +1,572 @@
+﻿@model IEnumerable<WebApplication1.Models.TaiKhoan>
+
+@{
+    ViewBag.Title = "Quản lý tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .account-page {
+        padding: 25px;
+        background: #f5f7fb;
+        min-height: calc(100vh - 60px);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .page-title h2 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .page-title p {
+        margin: 6px 0 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .btn-add {
+        background: #2563eb;
+        color: white;
+        padding: 11px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-add:hover {
+            background: #1d4ed8;
+            color: white;
+            text-decoration: none;
+        }
+
+    .search-box {
+        background: white;
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .search-form {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .search-input {
+        flex: 1;
+        height: 42px;
+        border: 1px solid #d1d5db;
+        border-radius: 7px;
+        padding: 0 14px;
+        font-size: 14px;
+        outline: none;
+    }
+
+        .search-input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+    .btn-search {
+        height: 42px;
+        border: none;
+        background: #2563eb;
+        color: white;
+        padding: 0 22px;
+        border-radius: 7px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+        .btn-search:hover {
+            background: #1d4ed8;
+        }
+
+    .account-table-box {
+        background: white;
+        border-radius: 12px;
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .account-table {
+        width: 100%;
+        min-width: 1000px;
+        border-collapse: collapse;
+    }
+
+        .account-table th {
+            background: #f8fafc;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+        .account-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eef0f3;
+            color: #374151;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .account-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .account-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+    .account-code {
+        font-weight: 700;
+        color: #2563eb;
+    }
+
+    .username {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .fullname {
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .role-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 6px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-active {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .status-inactive {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background: #fee2e2;
+        color: #dc2626;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .action-group {
+        display: flex;
+        gap: 6px;
+        white-space: nowrap;
+    }
+
+    .btn-action {
+        display: inline-block;
+        padding: 7px 10px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+        .btn-action:hover {
+            text-decoration: none;
+        }
+
+    .btn-edit {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+        .btn-edit:hover {
+            background: #fde68a;
+            color: #78350f;
+        }
+
+    .btn-permission {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+        .btn-permission:hover {
+            background: #bfdbfe;
+            color: #1e40af;
+        }
+
+    .btn-delete {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+        .btn-delete:hover {
+            background: #fecaca;
+            color: #991b1b;
+        }
+
+    .empty-data {
+        padding: 50px 20px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .empty-icon {
+        font-size: 35px;
+        margin-bottom: 10px;
+    }
+
+    .account-count {
+        margin-top: 15px;
+        color: #6b7280;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 768px) {
+
+        .account-page {
+            padding: 15px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .btn-add {
+            width: 100%;
+            text-align: center;
+        }
+
+        .search-form {
+            flex-direction: column;
+        }
+
+        .btn-search {
+            width: 100%;
+        }
+    }
+</style>
+
+
+<div class="account-page">
+
+    <!-- ===================================================== -->
+    <!-- HEADER -->
+    <!-- ===================================================== -->
+
+    <div class="page-header">
+
+        <div class="page-title">
+
+            <h2>
+                Quản lý tài khoản nhân viên
+            </h2>
+
+            <p>
+                Quản lý tài khoản, vai trò và quyền truy cập hệ thống
+            </p>
+
+        </div>
+
+        <a href="#"
+           class="btn-add">
+            + Thêm tài khoản
+        </a>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- TÌM KIẾM -->
+    <!-- ===================================================== -->
+
+    <div class="search-box">
+
+        @using (Html.BeginForm(
+            "Index",
+            "TaiKhoan",
+            FormMethod.Get,
+            new { @class = "search-form" }))
+        {
+            <input type="text"
+                   name="search"
+                   value="@ViewBag.Search"
+                   class="search-input"
+                   placeholder="Nhập tên đăng nhập, họ tên hoặc email..." />
+
+            <button type="submit"
+                    class="btn-search">
+                🔍 Tìm kiếm
+            </button>
+        }
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- BẢNG TÀI KHOẢN -->
+    <!-- ===================================================== -->
+
+    <div class="account-table-box">
+
+        <table class="account-table">
+
+            <thead>
+
+                <tr>
+
+                    <th>
+                        Mã
+                    </th>
+
+                    <th>
+                        Tên đăng nhập
+                    </th>
+
+                    <th>
+                        Họ và tên
+                    </th>
+
+                    <th>
+                        Email
+                    </th>
+
+                    <th>
+                        Số điện thoại
+                    </th>
+
+                    <th>
+                        Vai trò
+                    </th>
+
+                    <th>
+                        Trạng thái
+                    </th>
+
+                    <th>
+                        Thao tác
+                    </th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <!-- MÃ TÀI KHOẢN -->
+                            <td>
+                                <span class="account-code">
+                                    TK@(item.MaTaiKhoan.ToString("D5"))
+                                </span>
+                            </td>
+
+
+                            <!-- TÊN ĐĂNG NHẬP -->
+                            <td>
+                                <span class="username">
+                                    @item.TenDangNhap
+                                </span>
+                            </td>
+
+
+                            <!-- HỌ TÊN -->
+                            <td>
+                                <span class="fullname">
+                                    @item.HoTen
+                                </span>
+                            </td>
+
+
+                            <!-- EMAIL -->
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.Email))
+                                {
+                                    @item.Email
+                                }
+                                else
+                                {
+                                    <span style="color:#9ca3af;">
+                                        Chưa cập nhật
+                                    </span>
+                                }
+                            </td>
+
+
+                            <!-- SỐ ĐIỆN THOẠI -->
+                            <td>
+                                @if (!string.IsNullOrWhiteSpace(item.SoDienThoai))
+                                {
+                                    @item.SoDienThoai
+                                }
+                                else
+                                {
+                                    <span style="color:#9ca3af;">
+                                        Chưa cập nhật
+                                    </span>
+                                }
+                            </td>
+
+
+                            <!-- VAI TRÒ -->
+                            <td>
+
+                                @{
+                                    var vaiTroTheoTaiKhoan =
+                                        ViewBag.VaiTroTheoTaiKhoan
+                                        as Dictionary<int, string>;
+
+                                    string tenVaiTro = null;
+
+                                    if (vaiTroTheoTaiKhoan != null &&
+                                        vaiTroTheoTaiKhoan.ContainsKey(item.MaTaiKhoan))
+                                    {
+                                        tenVaiTro = vaiTroTheoTaiKhoan[item.MaTaiKhoan];
+                                    }
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(tenVaiTro))
+                                {
+                                    <span class="role-badge">
+                                        @tenVaiTro
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span style="color:#9ca3af;">
+                                        Chưa phân quyền
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <!-- TRẠNG THÁI -->
+                            <td>
+
+                                @if (item.TrangThai)
+                                {
+                                    <span class="status-active">
+                                        Đang hoạt động
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="status-inactive">
+                                        Ngừng hoạt động
+                                    </span>
+                                }
+
+                            </td>
+
+
+                            <!-- THAO TÁC -->
+                            <td>
+
+                                <div class="action-group">
+
+                                    <!-- SỬA -->
+                                    <a href="@Url.Action("Edit", "TaiKhoan", new { id = item.MaTaiKhoan })"
+                                       class="btn-action btn-edit">
+                                        <i class="fa fa-edit"></i>
+                                        Sửa
+                                    </a>
+
+
+                                    <!-- PHÂN QUYỀN -->
+                                    <a href="@Url.Action("PhanQuyen", "TaiKhoan", new { id = item.MaTaiKhoan })"
+                                       class="btn-action btn-permission">
+                                        Phân quyền
+                                    </a>
+
+
+                                    <!-- XÓA -->
+                                    <a href="#"
+                                       class="btn-action btn-delete">
+                                        Xóa
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+
+                        <td colspan="8">
+
+                            <div class="empty-data">
+
+                                <div class="empty-icon">
+                                    📋
+                                </div>
+
+                                <div>
+                                    Không tìm thấy tài khoản nào.
+                                </div>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ===================================================== -->
+    <!-- SỐ LƯỢNG TÀI KHOẢN -->
+    <!-- ===================================================== -->
+
+    @if (Model != null)
+    {
+        <div class="account-count">
+            Tổng số tài khoản:
+            <strong>@Model.Count()</strong>
+        </div>
+    }
+
+</div>

@@ -1,0 +1,289 @@
+﻿
+@model WebApplication1.Models.NhaCungCap
+
+@{
+    ViewBag.Title = "Thêm nhà cung cấp";
+}
+
+<style>
+    .supplier-create-page {
+        background: #f5f7fb;
+        min-height: 100vh;
+        padding: 25px;
+    }
+
+    .supplier-create-header {
+        margin-bottom: 22px;
+    }
+
+        .supplier-create-header h2 {
+            color: #1e293b;
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .supplier-create-header p {
+            color: #64748b;
+            margin: 0;
+        }
+
+    .supplier-form-card {
+        background: #fff;
+        border: 1px solid #e8edf4;
+        border-radius: 12px;
+        padding: 28px;
+        max-width: 950px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, .04);
+    }
+
+    .supplier-section-title {
+        color: #1e293b;
+        font-weight: 700;
+        font-size: 17px;
+        padding-bottom: 14px;
+        margin-bottom: 22px;
+        border-bottom: 1px solid #e8edf4;
+    }
+
+    .supplier-form-card .form-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 7px;
+    }
+
+    .supplier-form-card .form-control {
+        min-height: 43px;
+        border: 1px solid #dbe2ea;
+        border-radius: 7px;
+    }
+
+        .supplier-form-card .form-control:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .1);
+        }
+
+    .supplier-required {
+        color: #dc2626;
+    }
+
+    .supplier-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 28px;
+        padding-top: 20px;
+        border-top: 1px solid #e8edf4;
+    }
+
+    .supplier-help {
+        color: #94a3b8;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .supplier-validation {
+        color: #dc2626;
+        font-size: 13px;
+        margin-top: 5px;
+        display: block;
+    }
+
+    @@media (max-width: 600px) {
+        .supplier-create-page {
+            padding: 12px;
+        }
+
+        .supplier-form-card {
+            padding: 17px;
+        }
+    }
+</style>
+
+<div class="supplier-create-page">
+
+    <div class="supplier-create-header">
+        <h2>
+            <i class="fa-solid fa-truck-field me-2"></i>
+            Thêm nhà cung cấp
+        </h2>
+
+        <p>Nhập thông tin đơn vị cung cấp thuốc cho nhà thuốc.</p>
+    </div>
+
+    <div class="supplier-form-card">
+
+        @using (Html.BeginForm("Create", "NhaCungCap",
+            FormMethod.Post,
+            new { @class = "supplier-form" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="supplier-section-title">
+                <i class="fa-solid fa-circle-info me-2"></i>
+                Thông tin nhà cung cấp
+            </div>
+
+            @Html.ValidationSummary(
+                false,
+                "",
+                new { @class = "alert alert-danger" }
+            )
+
+            <div class="row g-3">
+
+                <div class="col-md-12">
+                    <label class="form-label">
+                        Tên nhà cung cấp
+                        <span class="supplier-required">*</span>
+                    </label>
+
+                    @Html.TextBoxFor(
+                        m => m.TenNhaCungCap,
+                        new
+                             {
+                            @class = "form-control",
+                            placeholder = "Nhập tên nhà cung cấp..."
+                        }
+                    )
+
+                    @Html.ValidationMessageFor(
+                        m => m.TenNhaCungCap,
+                        "",
+                        new { @class = "supplier-validation" }
+                    )
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label">Địa chỉ</label>
+
+                    @Html.TextBoxFor(
+                        m => m.DiaChi,
+                        new
+                             {
+                            @class = "form-control",
+                            placeholder = "Nhập địa chỉ nhà cung cấp..."
+                        }
+                    )
+
+                    @Html.ValidationMessageFor(
+                        m => m.DiaChi,
+                        "",
+                        new { @class = "supplier-validation" }
+                    )
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Số điện thoại</label>
+
+                    @Html.TextBoxFor(
+                        m => m.SoDienThoai,
+                        new
+                             {
+                            @class = "form-control",
+                            placeholder = "Ví dụ: 0901234567",
+                            type = "tel",
+                            maxlength = "15"
+                        }
+                    )
+
+                    @Html.ValidationMessageFor(
+                        m => m.SoDienThoai,
+                        "",
+                        new { @class = "supplier-validation" }
+                    )
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+
+                    @Html.TextBoxFor(
+                        m => m.Email,
+                        new
+                             {
+                            @class = "form-control",
+                            placeholder = "Ví dụ: contact@company.vn",
+                            type = "email",
+                            maxlength = "100"
+                        }
+                    )
+
+                    @Html.ValidationMessageFor(
+                        m => m.Email,
+                        "",
+                        new { @class = "supplier-validation" }
+                    )
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Mã số thuế</label>
+
+                    @Html.TextBoxFor(
+                        m => m.MaSoThue,
+                        new
+                             {
+                            @class = "form-control",
+                            placeholder = "Nhập mã số thuế...",
+                            maxlength = "50"
+                        }
+                    )
+
+                    @Html.ValidationMessageFor(
+                        m => m.MaSoThue,
+                        "",
+                        new { @class = "supplier-validation" }
+                    )
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Trạng thái hoạt động</label>
+
+                    <div class="form-check form-switch mt-2">
+
+                        <input type="checkbox"
+                               name="TrangThai"
+                               id="TrangThai"
+                               value="true"
+                               class="form-check-input"
+                               checked="checked" />
+
+                        <input type="hidden"
+                               name="TrangThai"
+                               value="false" />
+
+                        <label class="form-check-label" for="TrangThai">
+                            Đang hoạt động
+                        </label>
+
+                    </div>
+                    <div class="supplier-help">
+                        Nhà cung cấp mới mặc định được kích hoạt.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="supplier-form-actions">
+
+                <a href="@Url.Action("Index", "NhaCungCap")"
+                   class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i>
+                    Quay lại
+                </a>
+
+                <button type="reset" class="btn btn-light border">
+                    <i class="fa-solid fa-rotate-left me-1"></i>
+                    Nhập lại
+                </button>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk me-1"></i>
+                    Lưu nhà cung cấp
+                </button>
+
+            </div>
+        }
+
+    </div>
+
+</div>

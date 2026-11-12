@@ -1,0 +1,262 @@
+﻿
+@model WebApplication1.Models.ViewModels.SanPhamViewModel
+
+@{
+    ViewBag.Title = "Danh sách sản phẩm";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    .product-page {
+        padding: 25px 0 50px;
+    }
+
+    .product-heading {
+        margin-bottom: 25px;
+    }
+
+        .product-heading h2 {
+            font-weight: 800;
+            color: #174d3b;
+        }
+
+    .product-filter {
+        background: #fff;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 3px 15px rgba(0,0,0,.06);
+        margin-bottom: 25px;
+    }
+
+    .product-card {
+        height: 100%;
+        background: #fff;
+        border: 1px solid #e9eeee;
+        border-radius: 14px;
+        overflow: hidden;
+        transition: .25s;
+    }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 22px rgba(0,0,0,.09);
+        }
+
+    .product-image {
+        height: 210px;
+        background: #f6faf8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+    }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+    .product-placeholder {
+        font-size: 65px;
+        color: #26966c;
+    }
+
+    .product-info {
+        padding: 17px;
+    }
+
+    .product-name {
+        min-height: 48px;
+        font-size: 16px;
+        font-weight: 700;
+        color: #263c34;
+    }
+
+    .product-price {
+        color: #dc3545;
+        font-size: 19px;
+        font-weight: 800;
+        margin: 12px 0;
+    }
+
+    .product-stock {
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    .btn-product {
+        width: 100%;
+        border-radius: 8px;
+        background: #16865d;
+        color: white;
+        font-weight: 600;
+    }
+
+        .btn-product:hover {
+            background: #116c4b;
+            color: white;
+        }
+
+    .empty-products {
+        padding: 50px 20px;
+        text-align: center;
+        background: white;
+        border-radius: 14px;
+    }
+</style>
+
+<div class="product-page">
+
+    <!-- TIÊU ĐỀ -->
+    <div class="product-heading">
+        <h2><i class="fa-solid fa-capsules me-2"></i>Danh sách sản phẩm</h2>
+        <p class="text-muted">
+            Khám phá các sản phẩm thuốc và chăm sóc sức khỏe tại nhà thuốc.
+        </p>
+    </div>
+
+    <!-- TÌM KIẾM VÀ LỌC -->
+    <div class="product-filter">
+        @using (Html.BeginForm("Index", "SanPham", FormMethod.Get))
+        {
+            <div class="row g-3 align-items-end">
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Tìm kiếm sản phẩm</label>
+                    <input type="text"
+                           name="tuKhoa"
+                           value="@Model.TuKhoa"
+                           class="form-control"
+                           placeholder="Nhập tên thuốc cần tìm..." />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold">Danh mục thuốc</label>
+                    <select name="maDanhMuc" class="form-select">
+                        <option value="">Tất cả danh mục</option>
+
+                        @foreach (var dm in Model.DanhSachDanhMuc)
+                        {
+                            <option value="@dm.MaDanhMuc"
+                                    @(Model.MaDanhMuc == dm.MaDanhMuc ? "selected" : "")>
+                                @dm.TenDanhMuc
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-success flex-fill">
+                        <i class="fa-solid fa-search"></i> Tìm
+                    </button>
+
+                    <a href="@Url.Action("Index", "SanPham")"
+                       class="btn btn-outline-secondary"
+                       title="Xóa bộ lọc">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                </div>
+
+            </div>
+        }
+    </div>
+
+    <!-- SỐ LƯỢNG SẢN PHẨM -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0">Sản phẩm hiện có</h5>
+
+        <span class="text-muted">
+            Tìm thấy <strong>@Model.DanhSachThuoc.Count</strong> sản phẩm
+        </span>
+    </div>
+
+    <!-- DANH SÁCH SẢN PHẨM -->
+    @if (Model.DanhSachThuoc.Any())
+    {
+        <div class="row g-4">
+
+            @foreach (var thuoc in Model.DanhSachThuoc)
+            {
+                <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+
+                    <div class="product-card">
+
+                        <!-- HÌNH ẢNH -->
+                        <div class="product-image">
+
+                            @if (!string.IsNullOrEmpty(thuoc.AnhThuoc))
+                            {
+                                <img src="@Url.Content(thuoc.AnhThuoc)"
+                                     alt="@thuoc.TenThuoc" />
+                            }
+                            else
+                            {
+                                <i class="fa-solid fa-capsules product-placeholder"></i>
+                            }
+
+                        </div>
+
+                        <!-- THÔNG TIN -->
+                        <div class="product-info">
+
+                            <div class="product-name">
+                                @thuoc.TenThuoc
+                            </div>
+
+                            <div class="text-muted small">
+                                Đơn vị tính: @thuoc.DonViTinh
+                            </div>
+
+                            <div class="product-price">
+                                @String.Format("{0:N0} đ", thuoc.GiaBan)
+                            </div>
+
+                            <div class="product-stock">
+                                @if (thuoc.SoLuongTon > 0)
+                                {
+                                    <span class="text-success">
+                                        <i class="fa-solid fa-circle-check me-1"></i>
+                                        Còn hàng
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-danger">
+                                        <i class="fa-solid fa-circle-xmark me-1"></i>
+                                        Tạm hết hàng
+                                    </span>
+                                }
+                            </div>
+
+                            <a href="@Url.Action("Details", "SanPham",
+                                      new { id = thuoc.MaThuoc })"
+                               class="btn btn-product">
+                                Xem chi tiết
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="empty-products">
+            <i class="fa-solid fa-box-open fa-3x text-secondary mb-3"></i>
+            <h5 class="fw-bold">Không tìm thấy sản phẩm</h5>
+            <p class="text-muted">
+                Vui lòng thử từ khóa khác hoặc chọn danh mục khác.
+            </p>
+
+            <a href="@Url.Action("Index", "SanPham")"
+               class="btn btn-success">
+                Xem tất cả sản phẩm
+            </a>
+        </div>
+    }
+
+</div>

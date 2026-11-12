@@ -1,0 +1,440 @@
+﻿@model WebApplication1.Models.ViewModels.PhanQuyenViewModel
+
+@{
+    ViewBag.Title = "Phân quyền nhân viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+
+    .permission-page {
+        padding: 25px;
+        background: #f5f7fb;
+        min-height: calc(100vh - 60px);
+    }
+
+    .page-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        padding: 9px 15px;
+        border-radius: 7px;
+        background: #e5e7eb;
+        color: #374151;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .back-btn:hover {
+            background: #d1d5db;
+            color: #111827;
+            text-decoration: none;
+        }
+
+    .page-title h2 {
+        margin: 0;
+        font-size: 26px;
+        color: #1f2937;
+        font-weight: 700;
+    }
+
+    .page-title p {
+        margin: 5px 0 0;
+        color: #6b7280;
+    }
+
+    .account-info {
+        background: white;
+        border-radius: 12px;
+        padding: 20px 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+
+    .account-info-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 15px;
+    }
+
+    .account-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+
+    .info-item label {
+        display: block;
+        font-size: 12px;
+        color: #6b7280;
+        margin-bottom: 5px;
+    }
+
+    .info-item strong {
+        color: #111827;
+        font-size: 14px;
+    }
+
+    .permission-layout {
+        display: grid;
+        grid-template-columns: 40% 60%;
+        gap: 20px;
+    }
+
+    .permission-box {
+        background: white;
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+
+    .box-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 18px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .role-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 13px;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+        .role-item:hover {
+            background: #f8fafc;
+            border-color: #2563eb;
+        }
+
+        .role-item input {
+            margin-top: 4px;
+            width: 17px;
+            height: 17px;
+        }
+
+    .role-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .role-description {
+        display: block;
+        margin-top: 3px;
+        color: #6b7280;
+        font-size: 12px;
+    }
+
+    .permission-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px;
+        border-bottom: 1px solid #eef0f3;
+    }
+
+        .permission-item:last-child {
+            border-bottom: none;
+        }
+
+        .permission-item input {
+            width: 18px;
+            height: 18px;
+            margin-top: 3px;
+        }
+
+    .permission-name {
+        font-weight: 600;
+        color: #1f2937;
+    }
+
+    .permission-code {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 3px 7px;
+        border-radius: 5px;
+        background: #eff6ff;
+        color: #2563eb;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .permission-description {
+        display: block;
+        margin-top: 4px;
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .form-footer {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-save {
+        border: none;
+        background: #2563eb;
+        color: white;
+        padding: 11px 22px;
+        border-radius: 7px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background: #1d4ed8;
+        }
+
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        padding: 11px 20px;
+        border-radius: 7px;
+        background: #e5e7eb;
+        color: #374151;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+        .btn-cancel:hover {
+            background: #d1d5db;
+            color: #111827;
+            text-decoration: none;
+        }
+
+    .alert-success {
+        padding: 13px 16px;
+        border-radius: 8px;
+        background: #dcfce7;
+        color: #166534;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .alert-error {
+        padding: 13px 16px;
+        border-radius: 8px;
+        background: #fee2e2;
+        color: #991b1b;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 900px) {
+
+        .permission-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .account-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="permission-page">
+
+    <!-- HEADER -->
+    <div class="page-header">
+
+        <a href="@Url.Action("Index", "TaiKhoan")"
+           class="back-btn">
+            ← Quay lại
+        </a>
+
+        <div class="page-title">
+            <h2>Phân quyền nhân viên</h2>
+            <p>Quản lý vai trò và quyền truy cập hệ thống</p>
+        </div>
+
+    </div>
+
+
+    <!-- THÔNG BÁO -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert-success">
+            ✓ @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert-error">
+            ✕ @TempData["Error"]
+        </div>
+    }
+
+
+    <!-- THÔNG TIN TÀI KHOẢN -->
+    <div class="account-info">
+
+        <div class="account-info-title">
+            Thông tin tài khoản
+        </div>
+
+        <div class="account-grid">
+
+            <div class="info-item">
+                <label>Tên đăng nhập</label>
+                <strong>
+                    @Model.TaiKhoan.TenDangNhap
+                </strong>
+            </div>
+
+            <div class="info-item">
+                <label>Họ và tên</label>
+                <strong>
+                    @Model.TaiKhoan.HoTen
+                </strong>
+            </div>
+
+            <div class="info-item">
+                <label>Email</label>
+                <strong>
+                    @Model.TaiKhoan.Email
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FORM -->
+    @using (Html.BeginForm(
+        "LuuPhanQuyen",
+        "TaiKhoan",
+        FormMethod.Post))
+    {
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               name="MaTaiKhoan"
+               value="@Model.TaiKhoan.MaTaiKhoan" />
+
+
+        <div class="permission-layout">
+
+            <!-- ============================= -->
+            <!-- VAI TRÒ -->
+            <!-- ============================= -->
+
+            <div class="permission-box">
+
+                <div class="box-title">
+                    Vai trò
+                </div>
+
+
+                @foreach (var role in Model.VaiTros)
+                {
+
+                    <label class="role-item">
+
+                        <input type="radio"
+                               name="MaVaiTro"
+                               value="@role.MaVaiTro"
+                               @(Model.MaVaiTroDangChon == role.MaVaiTro ? "checked" : "") />
+
+                        <div>
+
+                            <span class="role-name">
+                                @role.TenVaiTro
+                            </span>
+
+                            <span class="role-description">
+                                @role.MoTa
+                            </span>
+
+                        </div>
+
+                    </label>
+
+                }
+
+            </div>
+
+
+            <!-- ============================= -->
+            <!-- QUYỀN -->
+            <!-- ============================= -->
+
+            <div class="permission-box">
+
+                <div class="box-title">
+                    Quyền truy cập
+                </div>
+
+
+                @foreach (var permission in Model.Quyens)
+                {
+
+                    <label class="permission-item">
+
+                        <input type="checkbox"
+                               name="MaQuyen"
+                               value="@permission.MaQuyen"
+                               @(permission.DaDuocCap ? "checked" : "") />
+
+                        <div>
+
+                            <span class="permission-name">
+                                @permission.TenQuyen
+                            </span>
+
+                            <span class="permission-code">
+                                @permission.MaQuyenCode
+                            </span>
+
+                            <span class="permission-description">
+                                @permission.MoTa
+                            </span>
+
+                        </div>
+
+                    </label>
+
+                }
+
+            </div>
+
+        </div>
+
+
+        <!-- BUTTON -->
+        <div class="form-footer">
+
+            <a href="@Url.Action("Index", "TaiKhoan")"
+               class="btn-cancel">
+                Hủy
+            </a>
+
+            <button type="submit"
+                    class="btn-save">
+                💾 Lưu phân quyền
+            </button>
+
+        </div>
+
+    }
+
+</div>

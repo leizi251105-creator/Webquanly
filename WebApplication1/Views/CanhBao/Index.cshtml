@@ -1,0 +1,394 @@
+﻿
+@using System
+@using WebApplication1.Models
+
+@{
+    ViewBag.Title = "Cảnh báo kho thuốc";
+
+    var thuocTonThap =
+        ViewBag.ThuocTonThap as IEnumerable<Thuoc>;
+
+    var loSapHetHan =
+        ViewBag.LoSapHetHan as IEnumerable<LoThuoc>;
+
+    var loDaHetHan =
+        ViewBag.LoDaHetHan as IEnumerable<LoThuoc>;
+
+    int soNgay = ViewBag.SoNgay ?? 30;
+    int soThuocTonThap = ViewBag.SoThuocTonThap ?? 0;
+    int soLoSapHetHan = ViewBag.SoLoSapHetHan ?? 0;
+    int soLoDaHetHan = ViewBag.SoLoDaHetHan ?? 0;
+}
+
+<style>
+    .alert-page {
+        padding: 20px;
+    }
+
+    .alert-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+        .alert-header h2 {
+            font-weight: 700;
+            color: #243247;
+            margin: 0 0 6px;
+        }
+
+    .alert-subtitle {
+        color: #7b8794;
+        margin: 0;
+    }
+
+    .alert-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #e9edf2;
+        box-shadow: 0 3px 12px rgba(0,0,0,.04);
+        height: 100%;
+    }
+
+        .alert-card .label {
+            display: block;
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .alert-card .number {
+            font-size: 30px;
+            font-weight: 700;
+            color: #263449;
+        }
+
+        .alert-card .description {
+            font-size: 12px;
+            color: #8b96a5;
+            margin-top: 5px;
+        }
+
+    .alert-section {
+        background: #fff;
+        border: 1px solid #e9edf2;
+        border-radius: 12px;
+        margin-top: 22px;
+        overflow: hidden;
+    }
+
+    .alert-section-title {
+        padding: 17px 20px;
+        border-bottom: 1px solid #edf0f4;
+        font-weight: 700;
+        color: #29384d;
+    }
+
+    .alert-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .alert-table th,
+        .alert-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid #edf0f4;
+            text-align: left;
+        }
+
+        .alert-table th {
+            background: #f8fafc;
+            color: #65758b;
+            font-size: 13px;
+        }
+
+        .alert-table td {
+            color: #344054;
+            font-size: 14px;
+        }
+
+    .empty-message {
+        padding: 25px;
+        text-align: center;
+        color: #8793a3;
+    }
+
+    .badge-warning {
+        background: #fff3cd;
+        color: #946200;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .badge-danger {
+        background: #fde8e8;
+        color: #c62828;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+    }
+
+    .filter-box {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+        .filter-box select {
+            min-width: 150px;
+            padding: 8px 12px;
+            border: 1px solid #dce2e9;
+            border-radius: 7px;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+</style>
+
+<div class="alert-page">
+
+    <div class="alert-header">
+        <div>
+            <h2> Cảnh báo kho thuốc</h2>
+            <p class="alert-subtitle">
+                Theo dõi tình trạng tồn kho và hạn sử dụng thuốc
+            </p>
+        </div>
+
+        <form method="get"
+              action="@Url.Action("Index", "CanhBao")"
+              class="filter-box">
+
+            <label for="soNgay">Thời gian cảnh báo:</label>
+
+            <select name="soNgay" id="soNgay"
+                    onchange="this.form.submit()">
+
+                <option value="30" @(soNgay == 30 ? "selected" : "")>
+                    Trong 30 ngày
+                </option>
+
+                <option value="60" @(soNgay == 60 ? "selected" : "")>
+                    Trong 60 ngày
+                </option>
+
+                <option value="90" @(soNgay == 90 ? "selected" : "")>
+                    Trong 90 ngày
+                </option>
+            </select>
+        </form>
+    </div>
+
+    <!-- THỐNG KÊ TỔNG QUAN -->
+    <div class="row">
+
+        <div class="col-md-4" style="margin-bottom:15px">
+            <div class="alert-card">
+                <span class="label">Thuốc tồn kho thấp</span>
+                <div class="number" style="color:#d69e00">
+                    @soThuocTonThap
+                </div>
+                <div class="description">
+                    Thuốc có tồn kho bằng hoặc thấp hơn mức tối thiểu
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4" style="margin-bottom:15px">
+            <div class="alert-card">
+                <span class="label">Lô thuốc sắp hết hạn</span>
+                <div class="number" style="color:#e67e22">
+                    @soLoSapHetHan
+                </div>
+                <div class="description">
+                    Trong vòng @soNgay ngày tới
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4" style="margin-bottom:15px">
+            <div class="alert-card">
+                <span class="label">Lô thuốc đã hết hạn</span>
+                <div class="number" style="color:#dc3545">
+                    @soLoDaHetHan
+                </div>
+                <div class="description">
+                    Lô thuốc đã quá hạn sử dụng và còn tồn
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CẢNH BÁO TỒN KHO THẤP -->
+    <div class="alert-section">
+
+        <div class="alert-section-title">
+            <span style="color:#d69e00">●</span>
+            Danh sách thuốc tồn kho thấp
+        </div>
+
+        <div class="table-responsive">
+            <table class="alert-table">
+                <thead>
+                    <tr>
+                        <th>Mã thuốc</th>
+                        <th>Tên thuốc</th>
+                        <th>Số lượng tồn</th>
+                        <th>Mức tồn tối thiểu</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (thuocTonThap != null && thuocTonThap.Any())
+                    {
+                        foreach (var thuoc in thuocTonThap)
+                        {
+                            <tr>
+                                <td>@thuoc.MaThuoc</td>
+                                <td>@thuoc.TenThuoc</td>
+                                <td>@thuoc.SoLuongTon</td>
+                                <td>@thuoc.MucTonToiThieu</td>
+                                <td>
+                                    <span class="badge-warning">
+                                        Tồn kho thấp
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="empty-message">
+                                Không có thuốc nào đang ở mức tồn kho thấp.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- CẢNH BÁO SẮP HẾT HẠN -->
+    <div class="alert-section">
+
+        <div class="alert-section-title">
+            <span style="color:#e67e22">●</span>
+            Danh sách lô thuốc sắp hết hạn
+        </div>
+
+        <div class="table-responsive">
+            <table class="alert-table">
+                <thead>
+                    <tr>
+                        <th>Tên thuốc</th>
+                        <th>Số lô</th>
+                        <th>Hạn sử dụng</th>
+                        <th>Số lượng còn</th>
+                        <th>Số ngày còn lại</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (loSapHetHan != null && loSapHetHan.Any())
+                    {
+                        foreach (var lo in loSapHetHan)
+                        {
+                            <tr>
+                                <td>
+                                    @(lo.Thuoc != null
+                                        ? lo.Thuoc.TenThuoc
+                                        : "Không xác định")
+                                </td>
+
+                                <td>@lo.SoLo</td>
+                                <td>@lo.HanSuDung.ToString("dd/MM/yyyy")</td>
+                                <td>@lo.SoLuong</td>
+
+                                <td>
+                                    <span class="badge-warning">
+                                        @((lo.HanSuDung - DateTime.Today).Days) ngày
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="empty-message">
+                                Không có lô thuốc sắp hết hạn trong @soNgay ngày tới.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- CẢNH BÁO ĐÃ HẾT HẠN -->
+    <div class="alert-section">
+
+        <div class="alert-section-title">
+            <span style="color:#dc3545">●</span>
+            Danh sách lô thuốc đã hết hạn
+        </div>
+
+        <div class="table-responsive">
+            <table class="alert-table">
+                <thead>
+                    <tr>
+                        <th>Tên thuốc</th>
+                        <th>Số lô</th>
+                        <th>Hạn sử dụng</th>
+                        <th>Số lượng còn</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (loDaHetHan != null && loDaHetHan.Any())
+                    {
+                        foreach (var lo in loDaHetHan)
+                        {
+                            <tr>
+                                <td>
+                                    @(lo.Thuoc != null
+                                        ? lo.Thuoc.TenThuoc
+                                        : "Không xác định")
+                                </td>
+
+                                <td>@lo.SoLo</td>
+                                <td>@lo.HanSuDung.ToString("dd/MM/yyyy")</td>
+                                <td>@lo.SoLuong</td>
+
+                                <td>
+                                    <span class="badge-danger">
+                                        Đã hết hạn
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="empty-message">
+                                Không có lô thuốc đã hết hạn còn tồn kho.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

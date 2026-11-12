@@ -1,0 +1,498 @@
+﻿
+@model IEnumerable<WebApplication1.Models.Thuoc>
+
+@{
+    ViewBag.Title = "Theo dõi tồn kho";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .inventory-page {
+        padding: 25px;
+        background: #f5f7fb;
+        min-height: calc(100vh - 80px);
+    }
+
+    .inventory-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+        .inventory-header h2 {
+            margin: 0 0 7px;
+            color: #1f2937;
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .inventory-header p {
+            margin: 0;
+            color: #6b7280;
+        }
+
+    .inventory-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .inventory-stat {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
+        border: 1px solid #eef0f3;
+    }
+
+    .inventory-stat-label {
+        color: #6b7280;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .inventory-stat-value {
+        color: #1f2937;
+        font-size: 27px;
+        font-weight: 700;
+    }
+
+    .inventory-stat-icon {
+        font-size: 22px;
+        margin-bottom: 12px;
+    }
+
+    .stat-blue {
+        color: #2563eb;
+    }
+
+    .stat-red {
+        color: #dc2626;
+    }
+
+    .stat-green {
+        color: #16a34a;
+    }
+
+    .stat-purple {
+        color: #7c3aed;
+    }
+
+    .inventory-toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        background: #fff;
+        padding: 18px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    }
+
+        .inventory-toolbar input,
+        .inventory-toolbar select {
+            height: 43px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 0 12px;
+            background: #fff;
+        }
+
+        .inventory-toolbar input {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .inventory-toolbar select {
+            min-width: 190px;
+        }
+
+    .inventory-table-box {
+        background: #fff;
+        border-radius: 12px;
+        overflow-x: auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,.05);
+    }
+
+    .inventory-table {
+        width: 100%;
+        min-width: 850px;
+        border-collapse: collapse;
+    }
+
+        .inventory-table th {
+            padding: 15px 13px;
+            background: #f8fafc;
+            color: #374151;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+
+        .inventory-table td {
+            padding: 15px 13px;
+            border-bottom: 1px solid #eef0f3;
+            color: #374151;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+        .inventory-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+    .inventory-code {
+        color: #2563eb !important;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .inventory-quantity {
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+    .inventory-badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .inventory-low {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .inventory-normal {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .inventory-empty {
+        padding: 40px 20px;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .inventory-footer {
+        margin-top: 15px;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .inventory-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    @@media (max-width: 1100px) {
+        .inventory-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .inventory-page {
+            padding: 15px;
+        }
+
+        .inventory-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .inventory-toolbar {
+            flex-direction: column;
+        }
+
+            .inventory-toolbar input,
+            .inventory-toolbar select {
+                width: 100%;
+            }
+    }
+</style>
+
+<div class="inventory-page">
+
+    <!-- TIÊU ĐỀ -->
+    <div class="inventory-header">
+        <div>
+            <h2>
+                <i class="fa-solid fa-boxes-stacked text-primary"></i>
+                Theo dõi tồn kho
+            </h2>
+            <p>
+                Theo dõi số lượng thuốc hiện có và kiểm soát tình trạng tồn kho.
+            </p>
+        </div>
+
+        <a href="@Url.Action("Index", "Kho")"
+           class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left"></i>
+            Quay lại quản lý kho
+        </a>
+    </div>
+
+    <!-- THỐNG KÊ -->
+    <div class="inventory-stats">
+
+        <div class="inventory-stat">
+            <div class="inventory-stat-icon stat-blue">
+                <i class="fa-solid fa-capsules"></i>
+            </div>
+            <div class="inventory-stat-label">Tổng số mặt hàng</div>
+            <div class="inventory-stat-value">
+                @ViewBag.TongSoMatHang
+            </div>
+        </div>
+
+        <div class="inventory-stat">
+            <div class="inventory-stat-icon stat-red">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div class="inventory-stat-label">Mặt hàng tồn kho thấp</div>
+            <div class="inventory-stat-value">
+                @ViewBag.SoMatHangTonThap
+            </div>
+        </div>
+
+        <div class="inventory-stat">
+            <div class="inventory-stat-icon stat-green">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="inventory-stat-label">Mặt hàng còn đủ hàng</div>
+            <div class="inventory-stat-value">
+                @ViewBag.SoMatHangConHang
+            </div>
+        </div>
+
+        <div class="inventory-stat">
+            <div class="inventory-stat-icon stat-purple">
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <div class="inventory-stat-label">Tổng số lượng tồn</div>
+            <div class="inventory-stat-value">
+                @ViewBag.TongSoLuongTon
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TÌM KIẾM VÀ LỌC -->
+    <div class="inventory-toolbar">
+
+        <input type="text"
+               id="inventorySearch"
+               placeholder="Tìm theo mã thuốc hoặc tên thuốc..."
+               aria-label="Tìm kiếm thuốc" />
+
+        <select id="inventoryFilter" aria-label="Lọc tình trạng tồn kho">
+            <option value="all">Tất cả tình trạng</option>
+            <option value="low">Tồn kho thấp</option>
+            <option value="normal">Còn đủ hàng</option>
+        </select>
+
+        <button type="button"
+                class="btn btn-outline-secondary"
+                id="inventoryReset">
+            <i class="fa-solid fa-rotate-left"></i>
+            Làm mới
+        </button>
+
+    </div>
+
+    <!-- BẢNG TỒN KHO -->
+    <div class="inventory-table-box">
+
+        <table class="inventory-table">
+            <thead>
+                <tr>
+                    <th>Mã thuốc</th>
+                    <th>Tên thuốc</th>
+                    <th>Đơn vị tính</th>
+                    <th>Số lượng tồn</th>
+                    <th>Mức tồn tối thiểu</th>
+                    <th>Số lượng cần bổ sung</th>
+                    <th>Tình trạng</th>
+                </tr>
+            </thead>
+
+            <tbody id="inventoryTableBody">
+
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        var tonThap = item.SoLuongTon <= item.MucTonToiThieu;
+                        var canBoSung = Math.Max(
+                            0,
+                            item.MucTonToiThieu - item.SoLuongTon
+                        );
+
+                        <tr data-status="@(tonThap ? "low" : "normal")">
+
+                            <td class="inventory-code">
+                                TH@(item.MaThuoc.ToString("D5"))
+                            </td>
+
+                            <td>
+                                <strong>@item.TenThuoc</strong>
+                            </td>
+
+                            <td>
+                                @(string.IsNullOrWhiteSpace(item.DonViTinh)
+                                    ? "—"
+                                    : item.DonViTinh)
+                            </td>
+
+                            <td class="inventory-quantity">
+                                @item.SoLuongTon
+                            </td>
+
+                            <td>
+                                @item.MucTonToiThieu
+                            </td>
+
+                            <td>
+                                @if (canBoSung > 0)
+                                {
+                                    <span class="text-danger fw-bold">
+                                        @canBoSung
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">0</span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (tonThap)
+                                {
+                                    <span class="inventory-badge inventory-low">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                        Tồn kho thấp
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="inventory-badge inventory-normal">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        Còn đủ hàng
+                                    </span>
+                                }
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">
+                            <div class="inventory-empty">
+                                <i class="fa-solid fa-box-open fa-2x mb-3"></i>
+                                <p>Chưa có dữ liệu thuốc tồn kho.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+        <div id="inventoryNoResult"
+             class="inventory-empty"
+             style="display:none;">
+            <i class="fa-solid fa-magnifying-glass fa-2x mb-3"></i>
+            <p>Không tìm thấy thuốc phù hợp.</p>
+        </div>
+
+    </div>
+
+    <!-- THỐNG KÊ CUỐI TRANG -->
+    <div class="inventory-footer">
+        Số mặt hàng đang hiển thị:
+        <strong id="inventoryVisibleCount">
+            @(Model == null ? 0 : Model.Count())
+        </strong>
+    </div>
+
+    <!-- GHI CHÚ -->
+    <div class="alert alert-info mt-4">
+        <i class="fa-solid fa-circle-info"></i>
+        <strong>Lưu ý:</strong>
+        Thuốc được xem là tồn kho thấp khi số lượng tồn nhỏ hơn
+        hoặc bằng mức tồn tối thiểu. Số lượng cần bổ sung được
+        tính dựa trên chênh lệch giữa mức tồn tối thiểu và số lượng hiện có.
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const searchInput = document.getElementById("inventorySearch");
+        const filterSelect = document.getElementById("inventoryFilter");
+        const resetButton = document.getElementById("inventoryReset");
+        const tableBody = document.getElementById("inventoryTableBody");
+        const noResult = document.getElementById("inventoryNoResult");
+        const visibleCount = document.getElementById("inventoryVisibleCount");
+
+        function filterInventory() {
+
+            const keyword = searchInput.value.trim().toLowerCase();
+            const selectedStatus = filterSelect.value;
+
+            const rows = tableBody.querySelectorAll("tr[data-status]");
+            let count = 0;
+
+            rows.forEach(function (row) {
+
+                const rowText = row.innerText.toLowerCase();
+                const rowStatus = row.getAttribute("data-status");
+
+                const matchesKeyword = rowText.includes(keyword);
+
+                const matchesStatus =
+                    selectedStatus === "all" ||
+                    selectedStatus === rowStatus;
+
+                const isVisible = matchesKeyword && matchesStatus;
+
+                row.style.display = isVisible ? "" : "none";
+
+                if (isVisible) {
+                    count++;
+                }
+            });
+
+            visibleCount.textContent = count;
+
+            if (rows.length > 0 && count === 0) {
+                noResult.style.display = "block";
+            } else {
+                noResult.style.display = "none";
+            }
+        }
+
+        searchInput.addEventListener("input", filterInventory);
+        filterSelect.addEventListener("change", filterInventory);
+
+        resetButton.addEventListener("click", function () {
+            searchInput.value = "";
+            filterSelect.value = "all";
+            filterInventory();
+        });
+
+    });
+</script>

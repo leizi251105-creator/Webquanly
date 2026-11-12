@@ -1,0 +1,327 @@
+﻿
+@model WebApplication1.Models.KiemKeBaoCaoViewModel
+
+@{
+    ViewBag.Title = "Báo cáo kiểm kê tồn kho";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">
+                <i class="fa-solid fa-chart-column me-2"></i>
+                Báo cáo kiểm kê tồn kho
+            </h2>
+            <p class="text-muted mb-0">
+                Tổng hợp tình hình kiểm kê và chênh lệch số lượng thuốc.
+            </p>
+        </div>
+
+        <a href="@Url.Action("Index", "KiemKe")"
+           class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            Quay lại
+        </a>
+    </div>
+
+    <!-- BỘ LỌC BÁO CÁO -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <strong>
+                <i class="fa-solid fa-filter me-2"></i>
+                Điều kiện báo cáo
+            </strong>
+        </div>
+
+        <div class="card-body">
+            @using (Html.BeginForm(
+                "BaoCao",
+                "KiemKe",
+                FormMethod.Get,
+                new { @class = "row g-3" }))
+            {
+                <div class="col-md-4">
+                    <label class="form-label">Từ ngày</label>
+                    <input type="date"
+                           name="tuNgay"
+                           class="form-control"
+                           value="@(Model.TuNgay.HasValue
+                               ? Model.TuNgay.Value.ToString("yyyy-MM-dd")
+                               : "")" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Đến ngày</label>
+                    <input type="date"
+                           name="denNgay"
+                           class="form-control"
+                           value="@(Model.DenNgay.HasValue
+                               ? Model.DenNgay.Value.ToString("yyyy-MM-dd")
+                               : "")" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Trạng thái phiếu</label>
+                    <select name="trangThai" class="form-select">
+                        <option value="">Tất cả trạng thái</option>
+
+                        <option value="Chưa xác nhận"
+                                @(Model.TrangThai == "Chưa xác nhận" ? "selected" : "")>
+                            Chưa xác nhận
+                        </option>
+
+                        <option value="Đã xác nhận"
+                                @(Model.TrangThai == "Đã xác nhận" ? "selected" : "")>
+                            Đã xác nhận
+                        </option>
+
+                        <option value="Đã hủy"
+                                @(Model.TrangThai == "Đã hủy" ? "selected" : "")>
+                            Đã hủy
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-chart-line me-1"></i>
+                        Xem báo cáo
+                    </button>
+
+                    <a href="@Url.Action("BaoCao", "KiemKe")"
+                       class="btn btn-outline-secondary ms-2">
+                        <i class="fa-solid fa-rotate-left me-1"></i>
+                        Xóa bộ lọc
+                    </a>
+                    <a href="@Url.Action("XuatExcel", "KiemKe", new {
+        tuNgay = Model.TuNgay?.ToString("yyyy-MM-dd"),
+        denNgay = Model.DenNgay?.ToString("yyyy-MM-dd"),
+        trangThai = Model.TrangThai
+    })"
+                       class="btn btn-success">
+                        <i class="glyphicon glyphicon-download-alt"></i>
+                        Xuất Excel
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- THỐNG KÊ PHIẾU -->
+    <h5 class="mb-3">1. Tổng quan phiếu kiểm kê</h5>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted mb-2">
+                        Tổng số phiếu
+                    </div>
+                    <h3 class="text-primary mb-0">
+                        @Model.TongSoPhieu
+                    </h3>
+                    <small class="text-muted">Phiếu kiểm kê</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted mb-2">
+                        Đã xác nhận
+                    </div>
+                    <h3 class="text-success mb-0">
+                        @Model.SoPhieuDaXacNhan
+                    </h3>
+                    <small class="text-muted">Phiếu đã cập nhật tồn kho</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted mb-2">
+                        Chưa xác nhận
+                    </div>
+                    <h3 class="text-warning mb-0">
+                        @Model.SoPhieuChuaXacNhan
+                    </h3>
+                    <small class="text-muted">Đang chờ xử lý</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted mb-2">
+                        Đã hủy
+                    </div>
+                    <h3 class="text-danger mb-0">
+                        @Model.SoPhieuDaHuy
+                    </h3>
+                    <small class="text-muted">Phiếu đã hủy</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- THỐNG KÊ CHÊNH LỆCH -->
+    <h5 class="mb-3">2. Tổng hợp chênh lệch tồn kho</h5>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card border-success shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted mb-2">
+                        Số lô thừa
+                    </div>
+                    <h3 class="text-success mb-0">
+                        @Model.SoLoThua
+                    </h3>
+                    <small class="text-muted">Lô có số lượng thực tế cao hơn hệ thống</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-danger shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted mb-2">
+                        Số lô thiếu
+                    </div>
+                    <h3 class="text-danger mb-0">
+                        @Model.SoLoThieu
+                    </h3>
+                    <small class="text-muted">Lô có số lượng thực tế thấp hơn hệ thống</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-success shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted mb-2">
+                        Tổng số lượng thừa
+                    </div>
+                    <h3 class="text-success mb-0">
+                        +@Model.TongSoLuongThua
+                    </h3>
+                    <small class="text-muted">Đơn vị thuốc</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-danger shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted mb-2">
+                        Tổng số lượng thiếu
+                    </div>
+                    <h3 class="text-danger mb-0">
+                        -@Model.TongSoLuongThieu
+                    </h3>
+                    <small class="text-muted">Đơn vị thuốc</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CHI TIẾT CHÊNH LỆCH -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <strong>
+                3. Chi tiết thuốc có chênh lệch
+            </strong>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model.DanhSachChiTiet == null ||
+                 !Model.DanhSachChiTiet.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    Không có dữ liệu chênh lệch tồn kho
+                    trong điều kiện báo cáo đã chọn.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Ngày kiểm kê</th>
+                                <th>Tên thuốc</th>
+                                <th>Số lô</th>
+                                <th class="text-center">SL hệ thống</th>
+                                <th class="text-center">SL thực tế</th>
+                                <th class="text-center">Chênh lệch</th>
+                                <th>Người lập</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var dong in Model.DanhSachChiTiet)
+                            {
+                                <tr>
+                                    <td>
+                                        <a href="@Url.Action(
+                                            "Details",
+                                            "KiemKe",
+                                            new { id = dong.MaPhieuKiemKe })">
+                                            #@dong.MaPhieuKiemKe
+                                        </a>
+                                    </td>
+
+                                    <td>
+                                        @dong.NgayKiemKe.ToString("dd/MM/yyyy HH:mm")
+                                    </td>
+
+                                    <td>@dong.TenThuoc</td>
+
+                                    <td>@dong.SoLo</td>
+
+                                    <td class="text-center">
+                                        @dong.SoLuongHeThong
+                                    </td>
+
+                                    <td class="text-center">
+                                        @dong.SoLuongThucTe
+                                    </td>
+
+                                    <td class="text-center">
+                                        @if (dong.ChenhLech > 0)
+                                        {
+                                            <span class="badge bg-success">
+                                                +@dong.ChenhLech (Thừa)
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                @dong.ChenhLech (Thiếu)
+                                            </span>
+                                        }
+                                    </td>
+
+                                    <td>@dong.TenNguoiLap</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+
+</div>

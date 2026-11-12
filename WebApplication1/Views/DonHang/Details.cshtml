@@ -1,0 +1,278 @@
+﻿
+@model WebApplication1.Models.DonHang
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    .detail-order-page {
+        max-width: 1100px;
+        margin: 35px auto;
+    }
+
+    .detail-header {
+        background: linear-gradient(120deg, #198754, #35a56f);
+        color: white;
+        border-radius: 15px;
+        padding: 28px;
+        margin-bottom: 25px;
+    }
+
+    .detail-card {
+        background: white;
+        border: 1px solid #e8ecef;
+        border-radius: 14px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 12px rgba(0,0,0,.04);
+    }
+
+    .section-title {
+        font-size: 19px;
+        font-weight: 700;
+        color: #198754;
+        margin-bottom: 20px;
+    }
+
+    .info-label {
+        color: #777;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-weight: 600;
+        color: #252525;
+    }
+
+    .order-code {
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    .order-status {
+        display: inline-block;
+        padding: 8px 15px;
+        border-radius: 20px;
+        background: #fff3cd;
+        color: #856404;
+        font-weight: 600;
+    }
+
+    .product-table th {
+        background: #f2f7f4;
+        white-space: nowrap;
+    }
+
+    .total-money {
+        color: #dc3545;
+        font-size: 26px;
+        font-weight: 700;
+    }
+
+    @@media print {
+        .no-print {
+            display: none !important;
+        }
+
+        .detail-card {
+            box-shadow: none;
+            break-inside: avoid;
+        }
+
+        .detail-header {
+            background: #eee !important;
+            color: #000 !important;
+        }
+    }
+</style>
+
+<div class="detail-order-page">
+
+    <!-- HEADER -->
+    <div class="detail-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+
+            <div>
+                <h2 class="fw-bold mb-2">
+                    <i class="fa-solid fa-file-invoice me-2"></i>
+                    Chi tiết đơn hàng
+                </h2>
+
+                <div class="order-code">
+                    DH@(Model.MaDonHang.ToString("D5"))
+                </div>
+
+                <div class="mt-2">
+                    Ngày đặt:
+                    @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            </div>
+
+            <div class="order-status">
+                @Model.TrangThai
+            </div>
+
+        </div>
+    </div>
+
+    <!-- THÔNG TIN NGƯỜI NHẬN -->
+    <div class="detail-card">
+
+        <h5 class="section-title">
+            <i class="fa-solid fa-user me-2"></i>
+            Thông tin người nhận
+        </h5>
+
+        <div class="row g-4">
+
+            <div class="col-md-6">
+                <div class="info-label">Họ và tên</div>
+                <div class="info-value">
+                    @(Model.KhachHang != null ? Model.KhachHang.HoTen : "")
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="info-label">Số điện thoại</div>
+                <div class="info-value">
+                    @(Model.KhachHang != null ? Model.KhachHang.SoDienThoai : "")
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="info-label">Địa chỉ nhận hàng</div>
+                <div class="info-value">
+                    @(Model.KhachHang != null ? Model.KhachHang.DiaChi : "")
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- DANH SÁCH SẢN PHẨM -->
+    <div class="detail-card">
+
+        <h5 class="section-title">
+            <i class="fa-solid fa-pills me-2"></i>
+            Sản phẩm trong đơn hàng
+        </h5>
+
+        <div class="table-responsive">
+            <table class="table table-bordered product-table align-middle">
+
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên sản phẩm</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-end">Đơn giá</th>
+                        <th class="text-end">Thành tiền</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{
+                        int stt = 1;
+                    }
+
+                    @foreach (var item in Model.ChiTietDonHangs)
+                    {
+                        <tr>
+                            <td>@stt</td>
+
+                            <td>
+                                @(item.Thuoc != null
+                                    ? item.Thuoc.TenThuoc : "Sản phẩm")
+                            </td>
+
+                            <td class="text-center">
+                                @item.SoLuong
+                            </td>
+
+                            <td class="text-end">
+                                @item.DonGia.ToString("N0") đ
+                            </td>
+
+                            <td class="text-end fw-semibold">
+                                @((item.ThanhTien ?? 0).ToString("N0")) đ
+                            </td>
+                        </tr>
+
+                        stt++;
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+
+        <div class="text-end mt-4">
+            <div class="text-muted">Tổng thanh toán</div>
+
+            <div class="total-money">
+                @Model.TongTien.ToString("N0") đ
+            </div>
+        </div>
+
+    </div>
+
+    <!-- THÔNG TIN THANH TOÁN VÀ GHI CHÚ -->
+    <div class="detail-card">
+
+        <h5 class="section-title">
+            <i class="fa-solid fa-truck me-2"></i>
+            Thông tin giao hàng
+        </h5>
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <div class="info-label">Phương thức thanh toán</div>
+                <div class="info-value">
+                    Thanh toán khi nhận hàng (COD)
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="info-label">Trạng thái đơn hàng</div>
+                <div class="info-value">
+                    @Model.TrangThai
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="info-label">Ghi chú giao hàng</div>
+                <div class="info-value">
+                    @(string.IsNullOrWhiteSpace(Model.GhiChu)
+                        ? "Không có ghi chú"
+                        : Model.GhiChu)
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- BUTTON -->
+    <div class="d-flex justify-content-between flex-wrap gap-2 no-print">
+
+        <a href="@Url.Action("LichSu", "DonHang")"
+           class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-2"></i>
+            Quay lại lịch sử đơn hàng
+        </a>
+
+        <button type="button"
+                onclick="window.print()"
+                class="btn btn-success">
+            <i class="fa-solid fa-print me-2"></i>
+            In đơn hàng
+        </button>
+
+    </div>
+
+</div>

@@ -1,0 +1,344 @@
+﻿@model WebApplication1.Models.ViewModels.TraCuuDonHangViewModel
+
+@{
+    ViewBag.Title = "Tra cứu đơn hàng";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    .tracking-page {
+        max-width: 950px;
+        margin: 35px auto;
+    }
+
+    .tracking-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+        .tracking-header .tracking-icon {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            background: #e8f5ee;
+            color: #198754;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 15px;
+        }
+
+    .tracking-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 5px 25px rgba(0,0,0,.06);
+        margin-bottom: 25px;
+    }
+
+        .tracking-card h4 {
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .tracking-card .form-label {
+            font-weight: 600;
+        }
+
+        .tracking-card .form-control {
+            min-height: 48px;
+            border-radius: 9px;
+        }
+
+    .order-info {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .info-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+        .info-item small {
+            color: #6c757d;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .info-item strong {
+            color: #212529;
+        }
+
+    .order-table th {
+        background: #f1f5f3;
+        white-space: nowrap;
+    }
+
+    .order-total {
+        background: #e8f5ee;
+        border-radius: 10px;
+        padding: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+        .order-total strong {
+            color: #198754;
+            font-size: 22px;
+        }
+
+    @@media (max-width: 576px) {
+        .tracking-card {
+            padding: 20px 15px;
+        }
+
+        .order-info {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="tracking-page">
+
+    <div class="tracking-header">
+        <div class="tracking-icon">
+            <i class="fa-solid fa-truck-fast"></i>
+        </div>
+
+        <h2 class="fw-bold">Tra cứu đơn hàng</h2>
+
+        <p class="text-muted">
+            Nhập mã đơn hàng và số điện thoại đặt hàng để kiểm tra tình trạng đơn hàng.
+        </p>
+    </div>
+
+    <div class="tracking-card">
+
+        <h4>
+            <i class="fa-solid fa-magnifying-glass text-success me-2"></i>
+            Thông tin tra cứu
+        </h4>
+
+        @using (Html.BeginForm("Index", "TraCuuDonHang", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label class="form-label">Mã đơn hàng</label>
+
+                @Html.TextBoxFor(m => m.MaDonHang, new
+                {
+                    @class = "form-control",
+                    placeholder = "Ví dụ: DH00001"
+                })
+
+                @Html.ValidationMessageFor(m => m.MaDonHang, "", new
+                {
+                    @class = "text-danger"
+                })
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Số điện thoại đặt hàng</label>
+
+                @Html.TextBoxFor(m => m.SoDienThoai, new
+                {
+                    @class = "form-control",
+                    placeholder = "Nhập số điện thoại đã đặt hàng"
+                })
+
+                @Html.ValidationMessageFor(m => m.SoDienThoai, "", new
+                {
+                    @class = "text-danger"
+                })
+            </div>
+
+            @Html.ValidationSummary(true, "", new
+            {
+                @class = "text-danger mb-3"
+            })
+
+            <button type="submit" class="btn btn-success btn-lg w-100">
+                <i class="fa-solid fa-magnifying-glass me-2"></i>
+                Tra cứu đơn hàng
+            </button>
+        }
+    </div>
+
+    @if (Model.KetQua != null)
+    {
+        <div class="tracking-card">
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                <h4 class="mb-0">Kết quả tra cứu</h4>
+
+                <span class="badge bg-success-subtle text-success p-2">
+                    <i class="fa-solid fa-circle-check me-1"></i>
+                    Đã tìm thấy đơn hàng
+                </span>
+            </div>
+
+            <div class="order-info">
+
+                <div class="info-item">
+                    <small>Mã đơn hàng</small>
+                    <strong>
+                        @("DH" + Model.KetQua.MaDonHang.ToString("D5"))
+                    </strong>
+                </div>
+
+                <div class="info-item">
+                    <small>Ngày đặt hàng</small>
+                    <strong>
+                        @Model.KetQua.NgayDat.ToString("dd/MM/yyyy HH:mm")
+                    </strong>
+                </div>
+
+                <div class="info-item">
+                    <small>Trạng thái đơn hàng</small>
+
+                    @if (Model.KetQua.TrangThai == "Chờ xác nhận")
+                    {
+                        <span class="badge bg-warning text-dark p-2">
+                            Chờ xác nhận
+                        </span>
+                    }
+                    else if (Model.KetQua.TrangThai == "Đã xác nhận")
+                    {
+                        <span class="badge bg-success p-2">
+                            Đã xác nhận
+                        </span>
+
+                        <div class="text-success small mt-2">
+                            <i class="fa-solid fa-truck-fast me-1"></i>
+                            Chờ đơn vị vận chuyển
+                        </div>
+                    }
+                    else if (Model.KetQua.TrangThai == "Đang giao hàng")
+                    {
+                        <span class="badge bg-primary p-2">
+                            Đang giao hàng
+                        </span>
+                    }
+                    else if (Model.KetQua.TrangThai == "Đã giao hàng")
+                    {
+                        <span class="badge bg-success p-2">
+                            Đã giao hàng
+                        </span>
+                    }
+                    else if (Model.KetQua.TrangThai == "Đã hủy")
+                    {
+                        <span class="badge bg-danger p-2">
+                            Đã hủy
+                        </span>
+                    }
+                </div>
+
+                <div class="info-item">
+                    <small>Phương thức thanh toán</small>
+                    <strong>Thanh toán khi nhận hàng (COD)</strong>
+                </div>
+
+            </div>
+
+            <h5 class="fw-bold mb-3">Thông tin người nhận</h5>
+
+            <p>
+                <strong>Họ tên:</strong>
+                @(Model.KetQua.KhachHang != null
+                    ? Model.KetQua.KhachHang.HoTen
+                    : "")
+            </p>
+
+            <p>
+                <strong>Số điện thoại:</strong>
+                @(Model.KetQua.KhachHang != null
+                    ? Model.KetQua.KhachHang.SoDienThoai
+                    : "")
+            </p>
+
+            <p>
+                <strong>Địa chỉ nhận hàng:</strong>
+                @(Model.KetQua.KhachHang != null
+                    ? Model.KetQua.KhachHang.DiaChi
+                    : "")
+            </p>
+
+            @if (!string.IsNullOrWhiteSpace(Model.KetQua.GhiChu))
+            {
+                <p>
+                    <strong>Ghi chú:</strong>
+                    @Model.KetQua.GhiChu
+                </p>
+            }
+
+            <hr />
+
+            <h5 class="fw-bold mb-3">Chi tiết sản phẩm</h5>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle order-table">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.KetQua.ChiTietDonHangs)
+                        {
+                            <tr>
+                                <td>
+                                    @(item.Thuoc != null
+                                        ? item.Thuoc.TenThuoc
+                                        : "Sản phẩm")
+
+                                </td>
+
+                                <td class="text-center">
+                                    @item.SoLuong
+                                </td>
+
+                                <td class="text-end">
+                                    @item.DonGia.ToString("N0") đ
+                                </td>
+
+                                <td class="text-end fw-semibold">
+                                    @((item.ThanhTien ?? (item.DonGia * item.SoLuong)).ToString("N0")) đ
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="order-total">
+                <span class="fw-bold">Tổng thanh toán</span>
+
+                <strong>
+                    @Model.KetQua.TongTien.ToString("N0") đ
+                </strong>
+            </div>
+
+        </div>
+    }
+
+    <div class="text-center mb-4">
+        <a href="@Url.Action("Index", "Customer")"
+           class="btn btn-outline-success">
+            <i class="fa-solid fa-house me-2"></i>
+            Về trang chủ
+        </a>
+    </div>
+
+</div>

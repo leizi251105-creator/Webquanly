@@ -1,0 +1,310 @@
+﻿
+@model WebApplication1.Models.PhieuNhap
+
+@{
+    ViewBag.Title = "Chi tiết phiếu nhập";
+
+    var maPhieu = "PN" + Model.MaPhieuNhap.ToString("D5");
+
+    var chiTietList = Model.ChiTietPhieuNhaps
+        .OrderBy(x => x.MaChiTiet)
+        .ToList();
+}
+
+<style>
+    /* GIAO DIỆN THÔNG THƯỜNG */
+
+    .detail-page {
+        padding: 24px;
+    }
+
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .detail-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .detail-card h4 {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .info-label {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .detail-table th {
+        background: #f3f6fa;
+        white-space: nowrap;
+    }
+
+    .detail-table td,
+    .detail-table th {
+        padding: 12px;
+        vertical-align: middle;
+    }
+
+    .total-amount {
+        text-align: right;
+        font-size: 20px;
+        font-weight: 700;
+        color: #0d6efd;
+    }
+
+    /* GIAO DIỆN KHI IN */
+
+    @@media print {
+
+        body {
+            background: #fff !important;
+        }
+
+        .top-navbar,
+        .sidebar,
+        .detail-header,
+        .btn {
+            display: none !important;
+        }
+
+        .main-wrapper {
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .detail-page {
+            padding: 0 !important;
+        }
+
+        .detail-card {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 10px 0 !important;
+            break-inside: avoid;
+        }
+
+        .detail-table {
+            width: 100% !important;
+        }
+
+        .detail-table th {
+            background: #eee !important;
+            color: #000 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .total-amount {
+            color: #000 !important;
+        }
+    }
+</style>
+
+<div class="detail-page">
+
+    <!-- TIÊU ĐỀ VÀ NÚT CHỨC NĂNG -->
+    <div class="detail-header">
+
+        <div>
+            <h2>Chi tiết phiếu nhập</h2>
+            <p class="text-muted mb-0">
+                Thông tin phiếu nhập và các thuốc đã nhập kho.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <button type="button"
+                    class="btn btn-primary"
+                    onclick="window.print()">
+                <i class="fa-solid fa-print me-1"></i>
+                In phiếu nhập
+            </button>
+
+            <a href="@Url.Action("Index", "NhapHang")"
+               class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Quay lại danh sách
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- THÔNG TIN CHUNG -->
+    <div class="detail-card">
+
+        <h4>
+            <i class="fa-solid fa-file-invoice me-2"></i>
+            Thông tin chung
+        </h4>
+
+        <div class="row g-4">
+
+            <div class="col-md-3 col-sm-6">
+                <div class="info-label">Mã phiếu nhập</div>
+                <div class="info-value">@maPhieu</div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="info-label">Người lập</div>
+                <div class="info-value">
+                    @(Model.TaiKhoan != null
+                        ? (!string.IsNullOrWhiteSpace(Model.TaiKhoan.HoTen)
+                            ? Model.TaiKhoan.HoTen
+                            : Model.TaiKhoan.TenDangNhap)
+                        : "Không xác định")
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="info-label">Ngày nhập</div>
+                <div class="info-value">
+                    @Model.NgayNhap.ToString("dd/MM/yyyy HH:mm")
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6">
+                <div class="info-label">Nhà cung cấp</div>
+                <div class="info-value">
+                    @(Model.NhaCungCap != null
+                        ? Model.NhaCungCap.TenNhaCungCap
+                        : "Không xác định")
+                </div>
+            </div>
+
+        </div>
+
+        <!-- GHI CHÚ -->
+        <div class="mt-4">
+            <div class="info-label">Ghi chú</div>
+            <div>
+                @(string.IsNullOrWhiteSpace(Model.GhiChu)
+                    ? "Không có ghi chú"
+                    : Model.GhiChu)
+            </div>
+        </div>
+
+    </div>
+
+    <!-- DANH SÁCH THUỐC NHẬP -->
+    <div class="detail-card">
+
+        <h4>
+            <i class="fa-solid fa-pills me-2"></i>
+            Danh sách thuốc nhập
+        </h4>
+
+        @if (chiTietList.Count == 0)
+        {
+            <div class="alert alert-info mb-0">
+                Phiếu nhập chưa có chi tiết thuốc.
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover detail-table">
+
+                    <thead>
+                        <tr>
+                            <th>STT</th>
+                            <th>Tên thuốc</th>
+                            <th>Số lô</th>
+                            <th>Ngày sản xuất</th>
+                            <th>Hạn sử dụng</th>
+                            <th class="text-end">Số lượng</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @{
+                            int stt = 0;
+                        }
+
+                        @foreach (var ct in chiTietList)
+                        {
+                            stt++;
+
+                            <tr>
+                                <td>@stt</td>
+
+                                <td>
+                                    @(ct.Thuoc != null
+                                        ? ct.Thuoc.TenThuoc
+                                        : "Không xác định")
+                                </td>
+
+                                <td>
+                                    @(ct.LoThuoc != null
+                                        ? ct.LoThuoc.SoLo
+                                        : "—")
+                                </td>
+
+                                <td>
+                                    @(ct.LoThuoc != null &&
+                                      ct.LoThuoc.NgaySanXuat.HasValue
+                                        ? ct.LoThuoc.NgaySanXuat.Value.ToString("dd/MM/yyyy")
+                                        : "—")
+                                </td>
+
+                                <td>
+                                    @(ct.LoThuoc != null
+                                        ? ct.LoThuoc.HanSuDung.ToString("dd/MM/yyyy")
+                                        : "—")
+                                </td>
+
+                                <td class="text-end">
+                                    @ct.SoLuong.ToString("N0")
+                                </td>
+
+                                <td class="text-end">
+                                    @ct.DonGia.ToString("N0") đ
+                                </td>
+
+                                <td class="text-end">
+                                    @((ct.ThanhTien ?? (decimal)(ct.SoLuong * ct.DonGia)).ToString("N0")) đ
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+        <!-- TỔNG TIỀN -->
+        <div class="total-amount mt-3">
+            Tổng tiền:
+            @((Model.TongTien ?? 0m).ToString("N0")) đ
+        </div>
+
+    </div>
+
+</div>

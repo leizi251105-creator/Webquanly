@@ -1,0 +1,403 @@
+﻿
+@model IEnumerable<WebApplication1.Models.PhieuNhap>
+
+@{
+    ViewBag.Title = "Quản lý nhập hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .nhap-page {
+        padding: 24px;
+        background: #f5f7fb;
+        min-height: calc(100vh - 80px);
+    }
+
+    .nhap-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+        .nhap-header h2 {
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 6px;
+        }
+
+        .nhap-header p {
+            color: #6b7280;
+            margin: 0;
+        }
+
+    .nhap-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 3px 10px rgba(0,0,0,.04);
+        overflow-x: auto;
+    }
+
+    .nhap-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 750px;
+    }
+
+        .nhap-table th,
+        .nhap-table td {
+            padding: 13px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .nhap-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .nhap-table td {
+            color: #334155;
+            font-size: 14px;
+        }
+
+    .nhap-empty {
+        text-align: center !important;
+        padding: 35px !important;
+        color: #64748b !important;
+    }
+
+    .nhap-total {
+        font-weight: 700;
+        color: #1d4ed8 !important;
+        white-space: nowrap;
+    }
+
+    .nhap-stat-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 3px 10px rgba(0,0,0,.04);
+        height: 100%;
+    }
+
+    .nhap-stat-icon {
+        width: 52px;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 21px;
+        flex-shrink: 0;
+    }
+</style>
+
+<div class="nhap-page">
+
+    <!-- TIÊU ĐỀ -->
+    <div class="nhap-header">
+
+        <div>
+            <h2>Quản lý nhập hàng</h2>
+            <p>Theo dõi phiếu nhập thuốc từ các nhà cung cấp.</p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            <a href="@Url.Action("Create", "NhapHang")"
+               class="btn btn-primary">
+                <i class="fa-solid fa-plus me-1"></i>
+                Tạo phiếu nhập
+            </a>
+
+            <a href="@Url.Action("Index", "Kho")"
+               class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Quay lại kho
+            </a>
+
+        </div>
+    </div>
+
+    <!-- THÔNG BÁO -->
+    @if (TempData["ThongBaoNhapHang"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show"
+             role="alert">
+
+            <i class="fa-solid fa-circle-check me-2"></i>
+            @TempData["ThongBaoNhapHang"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Đóng"></button>
+        </div>
+    }
+
+    <!-- THỐNG KÊ -->
+    <div class="row g-3 mb-4">
+
+        <!-- Tổng số phiếu -->
+        <div class="col-md-4">
+            <div class="nhap-stat-card">
+                <div class="card-body d-flex align-items-center">
+
+                    <div class="nhap-stat-icon bg-primary bg-opacity-10 text-primary me-3">
+                        <i class="fa-solid fa-file-invoice"></i>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small">
+                            Tổng số phiếu nhập
+                        </div>
+
+                        <h3 class="fw-bold mb-0">
+                            @ViewBag.TongSoPhieu
+                        </h3>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Phiếu nhập tháng này -->
+        <div class="col-md-4">
+            <div class="nhap-stat-card">
+                <div class="card-body d-flex align-items-center">
+
+                    <div class="nhap-stat-icon bg-success bg-opacity-10 text-success me-3">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small">
+                            Phiếu nhập tháng này
+                        </div>
+
+                        <h3 class="fw-bold mb-0">
+                            @ViewBag.SoPhieuTrongThang
+                        </h3>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Tổng giá trị nhập -->
+        <div class="col-md-4">
+            <div class="nhap-stat-card">
+                <div class="card-body d-flex align-items-center">
+
+                    <div class="nhap-stat-icon bg-warning bg-opacity-10 text-warning me-3">
+                        <i class="fa-solid fa-sack-dollar"></i>
+                    </div>
+
+                    <div>
+                        <div class="text-muted small">
+                            Tổng giá trị nhập
+                        </div>
+
+                        <h3 class="fw-bold mb-0 text-primary">
+                            @string.Format("{0:N0} đ", ViewBag.TongGiaTriNhap)
+                        </h3>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- DANH SÁCH VÀ TÌM KIẾM -->
+    <div class="nhap-card">
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+
+            <h5 class="fw-bold mb-0">
+                <i class="fa-solid fa-list me-2 text-primary"></i>
+                Danh sách phiếu nhập
+            </h5>
+
+            <span class="text-muted small">
+                Tìm thấy @(Model == null ? 0 : Model.Count()) phiếu nhập
+            </span>
+
+        </div>
+
+        <!-- FORM TÌM KIẾM -->
+        @using (Html.BeginForm("Index", "NhapHang", FormMethod.Get))
+        {
+            <div class="row g-3 mb-4">
+
+                <div class="col-lg-4 col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Tìm kiếm
+                    </label>
+
+                    <input type="text"
+                           name="tuKhoa"
+                           value="@ViewBag.TuKhoa"
+                           class="form-control"
+                           placeholder="Nhập mã phiếu hoặc tên nhà cung cấp..." />
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Từ ngày
+                    </label>
+
+                    <input type="date"
+                           name="tuNgay"
+                           value="@ViewBag.TuNgay"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+
+                    <label class="form-label fw-semibold">
+                        Đến ngày
+                    </label>
+
+                    <input type="date"
+                           name="denNgay"
+                           value="@ViewBag.DenNgay"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-lg-2 col-md-6 d-flex align-items-end">
+
+                    <button type="submit"
+                            class="btn btn-primary w-100">
+
+                        <i class="fa-solid fa-magnifying-glass me-1"></i>
+                        Lọc
+
+                    </button>
+
+                </div>
+
+                <div class="col-12">
+
+                    <a href="@Url.Action("Index", "NhapHang")"
+                       class="btn btn-outline-secondary btn-sm">
+
+                        <i class="fa-solid fa-rotate-left me-1"></i>
+                        Xóa bộ lọc
+
+                    </a>
+
+                </div>
+
+            </div>
+        }
+
+        <!-- BẢNG PHIẾU NHẬP -->
+        <div class="table-responsive">
+
+            <table class="nhap-table">
+
+                <thead>
+                    <tr>
+                        <th>Mã phiếu</th>
+                        <th>Ngày nhập</th>
+                        <th>Nhà cung cấp</th>
+                        <th>Người lập</th>
+                        <th>Tổng tiền</th>
+                        <th>Ghi chú</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var phieu in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    <strong>
+                                        @("PN" + phieu.MaPhieuNhap.ToString("D5"))
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    @phieu.NgayNhap.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @(phieu.NhaCungCap != null
+                                        ? phieu.NhaCungCap.TenNhaCungCap
+                                        : "Không xác định")
+                                </td>
+
+                                <td>
+                                    @(phieu.TaiKhoan != null
+                                        ? (!string.IsNullOrWhiteSpace(phieu.TaiKhoan.HoTen)
+                                            ? phieu.TaiKhoan.HoTen
+                                            : phieu.TaiKhoan.TenDangNhap)
+                                        : "Không xác định")
+                                </td>
+
+                                <td class="nhap-total">
+                                    @(phieu.TongTien.HasValue
+                                        ? phieu.TongTien.Value.ToString("N0") + " đ"
+                                        : "0 đ")
+                                </td>
+
+                                <td>
+                                    @phieu.GhiChu
+                                </td>
+
+                                <td>
+                                    <a href="@Url.Action("Details", "NhapHang", new { id = phieu.MaPhieuNhap })"
+                                       class="btn btn-sm btn-outline-primary">
+
+                                        <i class="fa-solid fa-eye me-1"></i>
+                                        Xem chi tiết
+
+                                    </a>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="nhap-empty">
+
+                                <i class="fa-solid fa-box-open fa-2x mb-2"></i>
+
+                                <div>
+                                    Không tìm thấy phiếu nhập phù hợp.
+                                </div>
+
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

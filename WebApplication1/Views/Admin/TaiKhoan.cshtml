@@ -1,0 +1,314 @@
+﻿@model WebApplication1.Models.ViewModels.PhanQuyenViewModel
+
+@{
+    ViewBag.Title = "Phân quyền nhân viên";
+}
+
+<div class="container-fluid">
+
+    <!-- TIÊU ĐỀ -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="font-weight-bold text-dark">
+                <i class="fa fa-lock text-primary"></i>
+                Phân quyền nhân viên
+            </h2>
+
+            <p class="text-muted mb-0">
+                Thiết lập vai trò và quyền truy cập cho tài khoản
+            </p>
+        </div>
+
+        <a href="@Url.Action("Index", "TaiKhoan")"
+           class="btn btn-secondary">
+
+            <i class="fa fa-arrow-left"></i>
+            Quay lại
+
+        </a>
+
+    </div>
+
+
+    <!-- THÔNG BÁO -->
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            <i class="fa fa-check-circle"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-circle"></i>
+            @TempData["Error"]
+        </div>
+    }
+
+
+    <!-- THÔNG TIN TÀI KHOẢN -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header py-3">
+
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fa fa-user"></i>
+                Thông tin tài khoản
+            </h6>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-3">
+
+                    <label class="font-weight-bold">
+                        Mã tài khoản
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @Model.TaiKhoan.MaTaiKhoan
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label class="font-weight-bold">
+                        Tên đăng nhập
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @Model.TaiKhoan.TenDangNhap
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label class="font-weight-bold">
+                        Họ và tên
+                    </label>
+
+                    <div class="form-control bg-light">
+                        @Model.TaiKhoan.HoTen
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-3">
+
+                    <label class="font-weight-bold">
+                        Trạng thái
+                    </label>
+
+                    <div class="form-control bg-light">
+
+                        @if (Model.TaiKhoan.TrangThai)
+                        {
+                            <span class="text-success font-weight-bold">
+                                <i class="fa fa-check-circle"></i>
+                                Hoạt động
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-danger font-weight-bold">
+                                <i class="fa fa-times-circle"></i>
+                                Khóa
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FORM PHÂN QUYỀN -->
+
+    @using (Html.BeginForm(
+        "LuuPhanQuyen",
+        "TaiKhoan",
+        FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.Hidden(
+            "MaTaiKhoan",
+            Model.TaiKhoan.MaTaiKhoan)
+
+
+        <!-- VAI TRÒ -->
+
+        <div class="card shadow mb-4">
+
+            <div class="card-header py-3">
+
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fa fa-users"></i>
+                    VAI TRÒ
+                </h6>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    @foreach (var role in Model.VaiTros)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-3">
+
+                            <div class="custom-control custom-radio">
+
+                                <input type="radio"
+                                       class="custom-control-input"
+                                       id="role_@role.MaVaiTro"
+                                       name="MaVaiTro"
+                                       value="@role.MaVaiTro"
+                                       @(Model.MaVaiTroDangChon == role.MaVaiTro ? "checked" : "") />
+
+                                <label class="custom-control-label"
+                                       for="role_@role.MaVaiTro">
+
+                                    <strong>
+                                        @role.TenVaiTro
+                                    </strong>
+
+                                    <small class="d-block text-muted mt-1">
+                                        @role.MoTa
+                                    </small>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- QUYỀN -->
+
+        <div class="card shadow mb-4">
+
+            <div class="card-header py-3">
+
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fa fa-key"></i>
+                    QUYỀN
+                </h6>
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="row">
+
+                    @foreach (var quyen in Model.Quyens)
+                    {
+                        <div class="col-md-6 col-lg-4 mb-4">
+
+                            <div class="border rounded p-3 h-100">
+
+                                <div class="custom-control custom-checkbox">
+
+                                    <input type="checkbox"
+                                           class="custom-control-input"
+                                           id="quyen_@quyen.MaQuyen"
+                                           disabled
+                                           @(quyen.DaDuocCap ? "checked" : "") />
+
+                                    <label class="custom-control-label"
+                                           for="quyen_@quyen.MaQuyen">
+
+                                        <strong>
+                                            @quyen.TenQuyen
+                                        </strong>
+
+                                    </label>
+
+                                </div>
+
+                                <small class="text-muted d-block mt-2">
+                                    @quyen.MoTa
+                                </small>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+
+                <div class="alert alert-info mt-2">
+
+                    <i class="fa fa-info-circle"></i>
+
+                    Quyền được xác định tự động theo vai trò.
+                    Khi thay đổi vai trò, hệ thống sẽ áp dụng các quyền
+                    tương ứng được cấu hình trong hệ thống.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- NÚT LƯU -->
+
+        <div class="card shadow mb-4">
+
+            <div class="card-body">
+
+                <div class="d-flex justify-content-end">
+
+                    <a href="@Url.Action("Index", "TaiKhoan")"
+                       class="btn btn-secondary mr-2">
+
+                        <i class="fa fa-times"></i>
+                        Hủy
+
+                    </a>
+
+
+                    <button type="submit"
+                            class="btn btn-primary">
+
+                        <i class="fa fa-save"></i>
+                        LƯU PHÂN QUYỀN
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+</div>

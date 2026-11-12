@@ -1,0 +1,199 @@
+﻿
+@model WebApplication1.Models.PhieuKiemKe
+
+@{
+    ViewBag.Title = "Chi tiết phiếu kiểm kê";
+}
+
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Chi tiết phiếu kiểm kê</h2>
+
+        <a href="@Url.Action("Index", "KiemKe")"
+           class="btn btn-secondary">
+            Quay lại danh sách
+        </a>
+    </div>
+
+    @if (TempData["ThongBao"] != null)
+    {
+        <div class="alert alert-info">
+            @TempData["ThongBao"]
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <strong>Thông tin phiếu kiểm kê</strong>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-2">
+                <div class="col-md-4">
+                    <strong>Mã phiếu:</strong>
+                    @Model.MaPhieuKiemKe
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Ngày kiểm kê:</strong>
+                    @Model.NgayKiemKe.ToString("dd/MM/yyyy HH:mm")
+                </div>
+
+                <div class="col-md-4">
+                    <strong>Trạng thái:</strong>
+
+                    @if (Model.TrangThai == "Đã xác nhận")
+                    {
+                        <span class="badge bg-success">Đã xác nhận</span>
+                    }
+                    else if (Model.TrangThai == "Đã hủy")
+                    {
+                        <span class="badge bg-danger">Đã hủy</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">
+                            @Model.TrangThai
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <strong>Người lập phiếu:</strong>
+                @(Model.TaiKhoan != null
+                    ? Model.TaiKhoan.TenDangNhap
+                    : "Không xác định")
+            </div>
+
+            <div>
+                <strong>Ghi chú:</strong>
+                @(string.IsNullOrWhiteSpace(Model.GhiChu)
+                    ? "Không có"
+                    : Model.GhiChu)
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <strong>Danh sách chi tiết kiểm kê</strong>
+        </div>
+
+        <div class="card-body table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>STT</th>
+                        <th>Tên thuốc</th>
+                        <th>Số lô</th>
+                        <th class="text-end">Tồn hệ thống</th>
+                        <th class="text-end">Tồn thực tế</th>
+                        <th class="text-end">Chênh lệch</th>
+                        <th>Ghi chú</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @{
+                        int stt = 1;
+                    }
+
+                    @foreach (var ct in Model.ChiTietKiemKes)
+                    {
+                        <tr>
+                            <td>@stt</td>
+
+                            <td>
+                                @(ct.LoThuoc != null &&
+                                  ct.LoThuoc.Thuoc != null
+                                    ? ct.LoThuoc.Thuoc.TenThuoc
+                                    : "Không xác định")
+                            </td>
+
+                            <td>
+                                @(ct.LoThuoc != null
+                                    ? ct.LoThuoc.SoLo
+                                    : "Không xác định")
+                            </td>
+
+                            <td class="text-end">
+                                @ct.SoLuongHeThong
+                            </td>
+
+                            <td class="text-end">
+                                @ct.SoLuongThucTe
+                            </td>
+
+                            <td class="text-end">
+                                @if (ct.ChenhLech < 0)
+                                {
+                                    <span class="text-danger">
+                                        @ct.ChenhLech
+                                    </span>
+                                }
+                                else if (ct.ChenhLech > 0)
+                                {
+                                    <span class="text-success">
+                                        +@ct.ChenhLech
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span>0</span>
+                                }
+                            </td>
+
+                            <td>@ct.GhiChu</td>
+                        </tr>
+
+                        stt++;
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    @if (Model.TrangThai == "Chưa xác nhận")
+    {
+        <div class="alert alert-warning mt-3">
+            Khi xác nhận, hệ thống sẽ cập nhật số lượng tồn theo
+            kết quả kiểm kê thực tế. Hãy kiểm tra kỹ trước khi tiếp tục.
+        </div>
+
+        <div class="d-flex gap-2">
+
+            @using (Html.BeginForm(
+                "XacNhan",
+                "KiemKe",
+                new { id = Model.MaPhieuKiemKe },
+                FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="btn btn-success"
+                        onclick="return confirm('Bạn có chắc chắn muốn xác nhận phiếu kiểm kê và cập nhật tồn kho?');">
+                    Xác nhận kiểm kê
+                </button>
+            }
+
+            @using (Html.BeginForm(
+                "Huy",
+                "KiemKe",
+                new { id = Model.MaPhieuKiemKe },
+                FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="btn btn-danger"
+                        onclick="return confirm('Bạn có chắc chắn muốn hủy phiếu kiểm kê này?');">
+                    Hủy phiếu
+                </button>
+            }
+
+        </div>
+    }
+

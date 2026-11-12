@@ -1,0 +1,920 @@
+﻿
+@model WebApplication1.ViewModels.NhapHangViewModel
+
+@{
+    ViewBag.Title = "Tạo phiếu nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    if (Model.ChiTiet == null || Model.ChiTiet.Count == 0)
+    {
+        Model.ChiTiet = new List<WebApplication1.ViewModels.ChiTietNhapHangViewModel>
+{
+            new WebApplication1.ViewModels.ChiTietNhapHangViewModel
+            {
+                SoLuong = 1,
+                HanSuDung = DateTime.Today.AddMonths(12)
+            }
+        };
+    }
+}
+
+<style>
+    .create-receipt {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-bottom: 25px;
+    }
+
+    .receipt-heading {
+        font-size: 25px;
+        font-weight: 750;
+        color: #1e293b;
+    }
+
+    .receipt-subtitle {
+        color: #64748b;
+        margin-top: 5px;
+    }
+
+    .receipt-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, .035);
+    }
+
+    .section-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 7px;
+    }
+
+    .form-control, .form-select {
+        min-height: 42px;
+        border-color: #dbe2ea;
+        border-radius: 8px;
+    }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, .12);
+        }
+
+    .table thead th {
+        background: #f1f5f9;
+        color: #334155;
+        font-size: 13px;
+        white-space: nowrap;
+        padding: 13px 10px;
+    }
+
+    .table tbody td {
+        padding: 10px;
+        vertical-align: middle;
+    }
+
+    .medicine-table {
+        min-width: 1120px;
+    }
+
+    .line-total {
+        min-width: 120px;
+        font-weight: 700;
+        color: #2563eb;
+        white-space: nowrap;
+    }
+
+    .total-panel {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 12px;
+        padding: 18px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .total-label {
+        color: #475569;
+        font-weight: 600;
+    }
+
+    .total-amount {
+        color: #1d4ed8;
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+    .required-mark {
+        color: #dc2626;
+    }
+
+    .validation-message {
+        font-size: 12px;
+        color: #dc2626;
+        display: block;
+        margin-top: 4px;
+    }
+
+    .empty-note {
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .remove-row {
+        white-space: nowrap;
+    }
+</style>
+
+<div class="create-receipt">
+
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <div class="receipt-heading">
+                <i class="fa-solid fa-file-circle-plus text-primary me-2"></i>
+                Tạo phiếu nhập mới
+            </div>
+            <div class="receipt-subtitle">
+                Quản lý thông tin nhà cung cấp và các loại thuốc nhập kho
+            </div>
+        </div>
+
+        <a href="@Url.Action("Index", "NhapHang")"
+           class="btn btn-outline-secondary">
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            Quay lại
+        </a>
+    </div>
+
+    @using (Html.BeginForm("Create", "NhapHang", FormMethod.Post,
+        new { id = "formNhapHang" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(false, "",
+            new { @class = "alert alert-danger" })
+
+        <div class="receipt-card">
+            <div class="section-title">
+                <i class="fa-solid fa-file-invoice text-primary me-2"></i>
+                1. Thông tin phiếu nhập
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.MaNhaCungCap,
+                        new { @class = "form-label" })
+                    <span class="required-mark">*</span>
+
+                    @Html.DropDownListFor(
+                        m => m.MaNhaCungCap,
+                        (SelectList)ViewBag.NhaCungCap,
+                        "-- Chọn nhà cung cấp --",
+                        new { @class = "form-select", required = "required" })
+
+                    @Html.ValidationMessageFor(
+                        m => m.MaNhaCungCap, "",
+                        new { @class = "text-danger" })
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.NgayNhap,
+                        new { @class = "form-label" })
+
+                    @Html.TextBoxFor(
+                        m => m.NgayNhap,
+                        "{0:yyyy-MM-ddTHH:mm}",
+                        new
+                             {
+                            @class = "form-control",
+                            type = "datetime-local",
+                            required = "required"
+                        })
+                </div>
+
+                <div class="col-12">
+                    @Html.LabelFor(m => m.GhiChu,
+                        new { @class = "form-label" })
+
+                    @Html.TextAreaFor(
+                        m => m.GhiChu,
+                        new
+                             {
+                            @class = "form-control",
+                            rows = "3",
+                            placeholder = "Nhập ghi chú cho phiếu nhập nếu có..."
+                        })
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div class="section-title mb-0">
+                <i class="fa-solid fa-pills text-primary me-2"></i>
+                2. Danh sách thuốc nhập
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="button" id="btnThemThuocMoi"
+                        class="btn btn-outline-success">
+                    <i class="fa-solid fa-capsules me-1"></i>
+                    Thuốc mới
+                </button>
+
+                <button type="button" id="btnThemThuoc"
+                        class="btn btn-primary">
+                    <i class="fa-solid fa-plus me-1"></i>
+                    Thêm dòng thuốc
+                </button>
+            </div>
+        </div>
+
+        <p class="empty-note mb-3">
+            Có thể thêm nhiều loại thuốc vào cùng một phiếu nhập.
+            Các trường có dấu <span class="required-mark">*</span> là bắt buộc.
+        </p>
+
+        <div class="table-responsive">
+            <table class="table table-bordered medicine-table" id="bangThuoc">
+                <thead>
+                    <tr>
+                        <th style="width: 220px">Thuốc <span class="required-mark">*</span></th>
+                        <th style="width: 100px">Số lượng <span class="required-mark">*</span></th>
+                        <th style="width: 145px">Đơn giá nhập <span class="required-mark">*</span></th>
+                        <th style="width: 125px">Số lô <span class="required-mark">*</span></th>
+                        <th style="width: 145px">Ngày sản xuất</th>
+                        <th style="width: 145px">Hạn sử dụng <span class="required-mark">*</span></th>
+                        <th style="width: 140px">Thành tiền</th>
+                        <th style="width: 75px">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody id="danhSachThuoc">
+                    @for (int i = 0; i < Model.ChiTiet.Count; i++)
+                    {
+                        <tr class="medicine-row">
+                            <td>
+                                @Html.DropDownListFor(
+                                 m => m.ChiTiet[i].MaThuoc,
+                                 (SelectList)ViewBag.Thuoc,
+                                 "-- Chọn thuốc --",
+                                 new { @class = "form-select medicine-select", required = "required" })
+                                <span class="validation-message"></span>
+                            </td>
+
+                            <td>
+                                @Html.TextBoxFor(
+                                 m => m.ChiTiet[i].SoLuong,
+                                 new
+                                 {
+                                     @class = "form-control quantity-input",
+                                     type = "number",
+                                     min = "1",
+                                     step = "1",
+                                     required = "required"
+                                 })
+                                <span class="validation-message"></span>
+                            </td>
+
+                            <td>
+                                @Html.TextBoxFor(
+                                 m => m.ChiTiet[i].DonGia,
+                                 new
+                                 {
+                                     @class = "form-control price-input",
+                                     type = "number",
+                                     min = "0.01",
+                                     step = "0.01",
+                                     placeholder = "Đơn giá",
+                                     required = "required"
+                                 })
+                                <span class="validation-message"></span>
+                            </td>
+
+                            <td>
+                                @Html.TextBoxFor(
+                                 m => m.ChiTiet[i].SoLo,
+                                 new
+                                 {
+                                     @class = "form-control batch-input",
+                                     placeholder = "Số lô",
+                                     required = "required"
+                                 })
+                                <span class="validation-message"></span>
+                            </td>
+
+                            <td>
+                                @Html.TextBoxFor(
+                                 m => m.ChiTiet[i].NgaySanXuat,
+                                 "{0:yyyy-MM-dd}",
+                                 new
+                                 {
+                                     @class = "form-control manufacture-input",
+                                     type = "date"
+                                 })
+                                <span class="validation-message"></span>
+                            </td>
+
+                            <td>
+                                @Html.TextBoxFor(
+                                 m => m.ChiTiet[i].HanSuDung,
+                                 "{0:yyyy-MM-dd}",
+                                 new
+                                 {
+                                     @class = "form-control expiry-input",
+                                     type = "date",
+                                     required = "required"
+                                 })
+                                <span class="validation-message"></span>
+                            </td>
+
+                            <td>
+                                <span class="line-total">0 đ</span>
+                            </td>
+
+                            <td class="text-center">
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger remove-row"
+                                        title="Xóa dòng thuốc">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="total-panel mt-3">
+            <div>
+                <div class="total-label">Tổng tiền phiếu nhập</div>
+                <div class="empty-note">Tổng tiền được tính tự động theo số lượng và đơn giá.</div>
+            </div>
+
+            <div class="total-amount" id="tongTien">0 đ</div>
+        </div>
+
+        <!-- CỬA SỔ THÊM THUỐC MỚI -->
+        <div class="modal fade" id="modalThemThuoc" tabindex="-1"
+             aria-labelledby="modalThemThuocLabel" aria-hidden="true">
+
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalThemThuocLabel">
+                            <i class="fa-solid fa-capsules text-success me-2"></i>
+                            Thêm thuốc mới vào danh mục
+                        </h5>
+
+                        <button type="button" class="btn-close"
+                                data-bs-dismiss="modal" aria-label="Đóng"></button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="alert alert-info">
+                            Thuốc mới sẽ được thêm vào danh mục với số lượng tồn ban đầu bằng 0.
+                            Số lượng tồn sẽ được cập nhật sau khi lưu phiếu nhập.
+                        </div>
+
+                        <div id="loiThemThuoc" class="alert alert-danger d-none"></div>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-8">
+                                <label class="form-label">
+                                    Tên thuốc <span class="required-mark">*</span>
+                                </label>
+                                <input type="text" id="newTenThuoc"
+                                       class="form-control" maxlength="200"
+                                       placeholder="Nhập tên thuốc">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    Đơn vị tính <span class="required-mark">*</span>
+                                </label>
+                                <input type="text" id="newDonViTinh"
+                                       class="form-control" maxlength="50"
+                                       placeholder="Ví dụ: Viên, hộp, chai">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    Danh mục <span class="required-mark">*</span>
+                                </label>
+
+                                @Html.DropDownList(
+                                    "NewMaDanhMuc",
+                                    ViewBag.DanhMucThuoc as SelectList,
+                                    "-- Chọn danh mục --",
+                                    new { @class = "form-select", id = "newMaDanhMuc" })
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Hoạt chất</label>
+                                <input type="text" id="newHoatChat"
+                                       class="form-control" maxlength="255"
+                                       placeholder="Nhập hoạt chất nếu có">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Hàm lượng</label>
+                                <input type="text" id="newHamLuong"
+                                       class="form-control" maxlength="100"
+                                       placeholder="Ví dụ: 500mg">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Giá bán</label>
+                                <input type="number" id="newGiaBan"
+                                       class="form-control" min="0"
+                                       step="0.01" value="0">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Mức tồn tối thiểu</label>
+                                <input type="number" id="newMucTonToiThieu"
+                                       class="form-control" min="0"
+                                       step="1" value="0">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light border"
+                                data-bs-dismiss="modal">
+                            Hủy
+                        </button>
+
+                        <button type="button" id="btnLuuThuocMoi"
+                                class="btn btn-success">
+                            <i class="fa-solid fa-floppy-disk me-1"></i>
+                            Lưu thuốc mới
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- HẾT CỬA SỔ THÊM THUỐC MỚI -->
+
+
+
+        <div class="alert alert-info">
+            <i class="fa-solid fa-circle-info me-1"></i>
+            Sau khi lưu phiếu nhập thành công, hệ thống sẽ tạo lô thuốc,
+            lưu chi tiết phiếu nhập và cập nhật số lượng tồn kho.
+            Vui lòng kiểm tra kỹ thông tin trước khi xác nhận.
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mb-4">
+            <a href="@Url.Action("Index", "NhapHang")"
+               class="btn btn-light border">
+                Hủy
+            </a>
+
+            <button type="submit" id="btnLuuPhieu" class="btn btn-success">
+                <i class="fa-solid fa-floppy-disk me-1"></i>
+                Lưu phiếu nhập
+            </button>
+        </div>
+
+    }
+
+
+</div>
+
+
+@section scripts {
+    <script>
+        (function () {
+            const tbody = document.getElementById("danhSachThuoc");
+            const btnThem = document.getElementById("btnThemThuoc");
+            const form = document.getElementById("formNhapHang");
+
+            // =========================================
+            // XỬ LÝ THÊM THUỐC MỚI
+            // =========================================
+
+            const btnThemThuocMoi = document.getElementById("btnThemThuocMoi");
+            const btnLuuThuocMoi = document.getElementById("btnLuuThuocMoi");
+
+            const modalElement = document.getElementById("modalThemThuoc");
+            const loiThemThuoc = document.getElementById("loiThemThuoc");
+
+            let modalThemThuoc = null;
+
+            if (modalElement && typeof bootstrap !== "undefined" && bootstrap.Modal) {
+                modalThemThuoc = bootstrap.Modal.getOrCreateInstance(modalElement);
+            } else {
+                console.error("Không tìm thấy Bootstrap Modal hoặc phần tử modalThemThuoc.");
+            }
+
+            function dinhDangTien(value) {
+                return new Intl.NumberFormat("vi-VN", {
+                    maximumFractionDigits: 0
+                }).format(value) + " đ";
+            }
+
+            function tinhTongTien() {
+                let tong = 0;
+
+                tbody.querySelectorAll(".medicine-row").forEach(function (row) {
+                    const soLuong = Number(row.querySelector(".quantity-input").value) || 0;
+                    const donGia = Number(row.querySelector(".price-input").value) || 0;
+                    const thanhTien = soLuong * donGia;
+
+                    row.querySelector(".line-total").textContent =
+                        dinhDangTien(thanhTien);
+
+                    tong += thanhTien;
+                });
+
+                document.getElementById("tongTien").textContent =
+                    dinhDangTien(tong);
+            }
+
+            function danhLaiChiSo() {
+                const rows = tbody.querySelectorAll(".medicine-row");
+
+                rows.forEach(function (row, index) {
+                    row.querySelectorAll("input, select").forEach(function (input) {
+                        input.name = input.name.replace(
+                            /ChiTiet\[\d+\]/g,
+                            "ChiTiet[" + index + "]"
+                        );
+
+                        if (input.id) {
+                            input.id = input.id.replace(
+                                /ChiTiet_\d+__/g,
+                                "ChiTiet_" + index + "__"
+                            );
+                        }
+                    });
+                });
+            }
+
+            function xoaDong(row) {
+                const rows = tbody.querySelectorAll(".medicine-row");
+
+                if (rows.length <= 1) {
+                    row.querySelectorAll("input").forEach(function (input) {
+                        if (input.type === "number") {
+                            input.value = input.classList.contains("quantity-input") ? "1" : "";
+                        } else {
+                            input.value = "";
+                        }
+                    });
+
+                    row.querySelector("select").selectedIndex = 0;
+                    row.querySelectorAll(".validation-message").forEach(function (span) {
+                        span.textContent = "";
+                    });
+                } else {
+                    row.remove();
+                }
+
+                danhLaiChiSo();
+                tinhTongTien();
+            }
+
+            function themDong() {
+                const rows = tbody.querySelectorAll(".medicine-row");
+                const dongMau = rows[0];
+
+                const dongMoi = dongMau.cloneNode(true);
+
+                dongMoi.querySelectorAll("input").forEach(function (input) {
+                    input.value = "";
+
+                    if (input.classList.contains("quantity-input")) {
+                        input.value = "1";
+                    }
+
+                    input.classList.remove("is-invalid");
+                });
+
+                dongMoi.querySelector("select").selectedIndex = 0;
+
+                dongMoi.querySelectorAll(".validation-message").forEach(function (span) {
+                    span.textContent = "";
+                });
+
+                dongMoi.querySelector(".line-total").textContent = "0 đ";
+
+                tbody.appendChild(dongMoi);
+
+                danhLaiChiSo();
+                tinhTongTien();
+            }
+
+            function kiemTraForm() {
+                let hopLe = true;
+                const ngayHienTai = new Date();
+                ngayHienTai.setHours(0, 0, 0, 0);
+
+                const rows = tbody.querySelectorAll(".medicine-row");
+
+                rows.forEach(function (row) {
+                    row.querySelectorAll(".validation-message").forEach(function (span) {
+                        span.textContent = "";
+                    });
+
+                    row.querySelectorAll(".is-invalid").forEach(function (input) {
+                        input.classList.remove("is-invalid");
+                    });
+
+                    function baoLoi(selector, message) {
+                        const input = row.querySelector(selector);
+                        input.classList.add("is-invalid");
+                        input.closest("td").querySelector(".validation-message").textContent = message;
+                        hopLe = false;
+                    }
+
+                    const thuoc = row.querySelector(".medicine-select").value;
+                    const soLuong = Number(row.querySelector(".quantity-input").value);
+                    const donGia = Number(row.querySelector(".price-input").value);
+                    const soLo = row.querySelector(".batch-input").value.trim();
+                    const ngaySX = row.querySelector(".manufacture-input").value;
+                    const hanSD = row.querySelector(".expiry-input").value;
+
+                    if (!thuoc || Number(thuoc) <= 0) {
+                        baoLoi(".medicine-select", "Vui lòng chọn thuốc.");
+                    }
+
+                    if (!Number.isInteger(soLuong) || soLuong <= 0) {
+                        baoLoi(".quantity-input", "Số lượng phải lớn hơn 0.");
+                    }
+
+                    if (!Number.isFinite(donGia) || donGia <= 0) {
+                        baoLoi(".price-input", "Đơn giá phải lớn hơn 0.");
+                    }
+
+                    if (!soLo) {
+                        baoLoi(".batch-input", "Vui lòng nhập số lô.");
+                    }
+
+                    if (!hanSD) {
+                        baoLoi(".expiry-input", "Vui lòng nhập hạn sử dụng.");
+                    } else {
+                        const ngayHetHan = new Date(hanSD + "T00:00:00");
+
+                        if (isNaN(ngayHetHan.getTime())) {
+                            baoLoi(".expiry-input", "Ngày hết hạn không hợp lệ.");
+                        } else if (ngayHetHan <= ngayHienTai) {
+                            baoLoi(".expiry-input", "Hạn sử dụng phải sau ngày hiện tại.");
+                        }
+                    }
+
+                    if (ngaySX && hanSD && ngaySX > hanSD) {
+                        baoLoi(".manufacture-input", "Ngày sản xuất không được sau hạn sử dụng.");
+                    }
+                });
+
+                const nhaCungCap = document.getElementById("MaNhaCungCap");
+
+                if (nhaCungCap && !nhaCungCap.value) {
+                    nhaCungCap.classList.add("is-invalid");
+                    hopLe = false;
+                } else if (nhaCungCap) {
+                    nhaCungCap.classList.remove("is-invalid");
+                }
+
+                return hopLe;
+            }
+
+            // =========================================
+            // SỰ KIỆN THÊM DÒNG THUỐC
+            // =========================================
+
+            btnThem.addEventListener("click", themDong);
+
+            // =========================================
+            // MỞ MODAL THÊM THUỐC MỚI
+            // =========================================
+
+            btnThemThuocMoi.addEventListener("click", function () {
+                loiThemThuoc.classList.add("d-none");
+                loiThemThuoc.textContent = "";
+
+                if (modalThemThuoc) {
+                    modalThemThuoc.show();
+                } else {
+                    alert("Không thể mở cửa sổ thêm thuốc. Vui lòng kiểm tra Bootstrap JavaScript.");
+                }
+            });
+
+            // =========================================
+            // HIỂN THỊ LỖI TRONG MODAL
+            // =========================================
+
+            function hienThiLoiThemThuoc(thongBao) {
+                loiThemThuoc.textContent = thongBao;
+                loiThemThuoc.classList.remove("d-none");
+            }
+
+            // =========================================
+            // LƯU THUỐC MỚI BẰNG AJAX
+            // =========================================
+
+            btnLuuThuocMoi.addEventListener("click", async function () {
+                loiThemThuoc.classList.add("d-none");
+                loiThemThuoc.textContent = "";
+
+                const tenThuoc = document.getElementById("newTenThuoc").value.trim();
+                const donViTinh = document.getElementById("newDonViTinh").value.trim();
+                const maDanhMuc = document.getElementById("newMaDanhMuc").value;
+                const hoatChat = document.getElementById("newHoatChat").value.trim();
+                const hamLuong = document.getElementById("newHamLuong").value.trim();
+                const giaBan = document.getElementById("newGiaBan").value;
+                const mucTon = document.getElementById("newMucTonToiThieu").value;
+
+                if (!tenThuoc) {
+                    hienThiLoiThemThuoc("Vui lòng nhập tên thuốc.");
+                    return;
+                }
+
+                if (!donViTinh) {
+                    hienThiLoiThemThuoc("Vui lòng nhập đơn vị tính.");
+                    return;
+                }
+
+                if (!maDanhMuc) {
+                    hienThiLoiThemThuoc("Vui lòng chọn danh mục thuốc.");
+                    return;
+                }
+
+                if (giaBan === "" || !Number.isFinite(Number(giaBan)) || Number(giaBan) < 0) {
+                    hienThiLoiThemThuoc("Giá bán không hợp lệ.");
+                    return;
+                }
+
+                if (!Number.isInteger(Number(mucTon)) || Number(mucTon) < 0) {
+                    hienThiLoiThemThuoc("Mức tồn tối thiểu phải là số nguyên không âm.");
+                    return;
+                }
+
+                const tokenInput = form.querySelector('input[name="__RequestVerificationToken"]');
+
+                if (!tokenInput) {
+                    hienThiLoiThemThuoc("Không tìm thấy mã xác thực. Vui lòng tải lại trang.");
+                    return;
+                }
+
+                const duLieu = new URLSearchParams();
+                duLieu.append("__RequestVerificationToken", tokenInput.value);
+                duLieu.append("TenThuoc", tenThuoc);
+                duLieu.append("DonViTinh", donViTinh);
+                duLieu.append("MaDanhMuc", maDanhMuc);
+                duLieu.append("HoatChat", hoatChat);
+                duLieu.append("HamLuong", hamLuong);
+                duLieu.append("GiaBan", giaBan);
+                duLieu.append("MucTonToiThieu", mucTon);
+
+                btnLuuThuocMoi.disabled = true;
+                btnLuuThuocMoi.innerHTML =
+                    '<span class="spinner-border spinner-border-sm me-1"></span> Đang lưu...';
+
+                try {
+                    const response = await fetch('@Url.Action("ThemThuocNhanh", "NhapHang")', {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+                        },
+                        body: duLieu.toString()
+                    });
+
+                    const ketQua = await response.json();
+
+                    if (!response.ok || !ketQua.success) {
+                        hienThiLoiThemThuoc(ketQua.message || "Không thể thêm thuốc mới.");
+                        return;
+                    }
+
+                    // Thêm thuốc mới vào tất cả danh sách chọn thuốc
+                    const cacDanhSachThuoc = tbody.querySelectorAll(".medicine-select");
+
+                    cacDanhSachThuoc.forEach(function (select) {
+                        const optionCu = Array.from(select.options).find(
+                            option => option.value === String(ketQua.maThuoc)
+                        );
+
+                        if (!optionCu) {
+                            const optionMoi = new Option(
+                                ketQua.tenThuoc,
+                                ketQua.maThuoc
+                            );
+
+                            select.add(optionMoi);
+                        }
+                    });
+
+                    // Chọn thuốc mới ở dòng đầu tiên chưa chọn
+                    let dongCanChon = Array.from(
+                        tbody.querySelectorAll(".medicine-row")
+                    ).find(function (row) {
+                        return !row.querySelector(".medicine-select").value;
+                    });
+
+                    if (!dongCanChon) {
+                        themDong();
+
+                        const rows = tbody.querySelectorAll(".medicine-row");
+                        dongCanChon = rows[rows.length - 1];
+                    }
+
+                    const selectThuoc = dongCanChon.querySelector(".medicine-select");
+                    selectThuoc.value = String(ketQua.maThuoc);
+
+                    tinhTongTien();
+
+                    // Xóa dữ liệu sau khi lưu thành công
+                    document.getElementById("newTenThuoc").value = "";
+                    document.getElementById("newDonViTinh").value = "";
+                    document.getElementById("newMaDanhMuc").selectedIndex = 0;
+                    document.getElementById("newHoatChat").value = "";
+                    document.getElementById("newHamLuong").value = "";
+                    document.getElementById("newGiaBan").value = "0";
+                    document.getElementById("newMucTonToiThieu").value = "0";
+
+                    modalThemThuoc.hide();
+
+                    alert("Thêm thuốc mới thành công. Thuốc đã được chọn vào phiếu nhập.");
+
+                } catch (error) {
+                    hienThiLoiThemThuoc("Có lỗi khi kết nối máy chủ. Vui lòng thử lại.");
+                    console.error(error);
+                } finally {
+                    btnLuuThuocMoi.disabled = false;
+                    btnLuuThuocMoi.innerHTML =
+                        '<i class="fa-solid fa-floppy-disk me-1"></i> Lưu thuốc mới';
+                }
+            });
+
+            // =========================================
+            // CÁC SỰ KIỆN TRÊN BẢNG THUỐC
+            // =========================================
+
+            tbody.addEventListener("click", function (event) {
+                const button = event.target.closest(".remove-row");
+
+                if (button) {
+                    xoaDong(button.closest(".medicine-row"));
+                }
+            });
+
+            tbody.addEventListener("input", function (event) {
+                if (event.target.classList.contains("quantity-input") ||
+                    event.target.classList.contains("price-input")) {
+                    tinhTongTien();
+                }
+            });
+
+            tbody.addEventListener("change", function () {
+                tinhTongTien();
+            });
+
+            // =========================================
+            // KIỂM TRA TRƯỚC KHI LƯU PHIẾU NHẬP
+            // =========================================
+
+            form.addEventListener("submit", function (event) {
+                danhLaiChiSo();
+
+                if (!kiemTraForm()) {
+                    event.preventDefault();
+
+                    const firstInvalid = form.querySelector(".is-invalid");
+
+                    if (firstInvalid) {
+                        firstInvalid.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center"
+                        });
+
+                        firstInvalid.focus();
+                    }
+                }
+            });
+
+            danhLaiChiSo();
+            tinhTongTien();
+
+        })();
+    </script>
+}

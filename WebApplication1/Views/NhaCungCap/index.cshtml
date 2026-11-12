@@ -1,0 +1,388 @@
+﻿
+@model IEnumerable<WebApplication1.Models.NhaCungCap>
+
+@{
+    ViewBag.Title = "Quản lý nhà cung cấp";
+
+    int tongNhaCungCap = Model == null ? 0 : Model.Count();
+    int dangHoatDong = Model == null ? 0 : Model.Count(x => x.TrangThai == true);
+    int ngungHoatDong = Model == null ? 0 : Model.Count(x => x.TrangThai == false);
+}
+
+<style>
+    .supplier-page {
+        padding: 24px;
+        background: #f5f7fb;
+        min-height: 100vh;
+    }
+
+    .supplier-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+        .supplier-heading h2 {
+            font-size: 25px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 6px;
+        }
+
+        .supplier-heading p {
+            color: #64748b;
+            margin: 0;
+        }
+
+    .supplier-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+
+    .supplier-stat {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #e8edf4;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, .04);
+    }
+
+    .supplier-stat-label {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .supplier-stat-number {
+        color: #1e293b;
+        font-size: 27px;
+        font-weight: 700;
+    }
+
+    .supplier-card {
+        background: #fff;
+        border: 1px solid #e8edf4;
+        border-radius: 12px;
+        padding: 22px;
+        box-shadow: 0 3px 12px rgba(15, 23, 42, .04);
+    }
+
+    .supplier-search {
+        display: grid;
+        grid-template-columns: minmax(200px, 1fr) 190px auto auto;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+        .supplier-search input,
+        .supplier-search select {
+            min-height: 42px;
+            border: 1px solid #dbe2ea;
+            border-radius: 7px;
+            padding: 8px 12px;
+            width: 100%;
+        }
+
+    .supplier-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .supplier-table th {
+            background: #f8fafc;
+            color: #475569;
+            font-size: 13px;
+            padding: 14px 12px;
+            text-align: left;
+            white-space: nowrap;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .supplier-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #edf1f5;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .supplier-table tr:hover {
+            background: #fafcff;
+        }
+
+    .supplier-code {
+        color: #2563eb;
+        font-weight: 700;
+    }
+
+    .supplier-status {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .supplier-active {
+        background: #dcfce7;
+        color: #15803d;
+    }
+
+    .supplier-inactive {
+        background: #fee2e2;
+        color: #b91c1c;
+    }
+
+    .supplier-actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+
+    .supplier-empty {
+        text-align: center;
+        padding: 35px !important;
+        color: #64748b !important;
+    }
+
+    @@media (max-width: 900px) {
+        .supplier-search {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .supplier-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .supplier-page {
+            padding: 12px;
+        }
+
+        .supplier-search {
+            grid-template-columns: 1fr;
+        }
+
+        .supplier-card {
+            padding: 12px;
+        }
+    }
+</style>
+
+<div class="supplier-page">
+
+    <div class="supplier-heading">
+        <div>
+            <h2>
+                <i class="fa-solid fa-truck-field me-2"></i>
+                Quản lý nhà cung cấp
+            </h2>
+            <p>Quản lý thông tin và theo dõi các đơn vị cung cấp thuốc.</p>
+        </div>
+
+        <a href="@Url.Action("Create", "NhaCungCap")"
+           class="btn btn-primary">
+            <i class="fa-solid fa-plus me-1"></i>
+            Thêm nhà cung cấp
+        </a>
+    </div>
+
+    <div class="supplier-stats">
+
+        <div class="supplier-stat">
+            <div class="supplier-stat-label">Tổng nhà cung cấp</div>
+            <div class="supplier-stat-number">@tongNhaCungCap</div>
+        </div>
+
+        <div class="supplier-stat">
+            <div class="supplier-stat-label">Đang hoạt động</div>
+            <div class="supplier-stat-number text-success">@dangHoatDong</div>
+        </div>
+
+        <div class="supplier-stat">
+            <div class="supplier-stat-label">Ngừng hoạt động</div>
+            <div class="supplier-stat-number text-danger">@ngungHoatDong</div>
+        </div>
+
+    </div>
+
+    @if (TempData["ThongBao"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["ThongBao"]
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Loi"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Loi"]
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="supplier-card">
+
+        @using (Html.BeginForm("Index", "NhaCungCap", FormMethod.Get))
+        {
+            <div class="supplier-search">
+
+                <input type="text"
+                       name="tuKhoa"
+                       value="@ViewBag.TuKhoa"
+                       placeholder="Tìm tên, số điện thoại, email, mã số thuế..." />
+
+                <select name="trangThai">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="1"
+                            @(ViewBag.TrangThai == "1" ? "selected" : "")>
+                        Đang hoạt động
+                    </option>
+                    <option value="0"
+                            @(ViewBag.TrangThai == "0" ? "selected" : "")>
+                        Ngừng hoạt động
+                    </option>
+                </select>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-magnifying-glass me-1"></i>
+                    Tìm kiếm
+                </button>
+
+                <a href="@Url.Action("Index", "NhaCungCap")"
+                   class="btn btn-outline-secondary">
+                    Làm mới
+                </a>
+
+            </div>
+        }
+
+        <div class="table-responsive">
+
+            <table class="supplier-table">
+
+                <thead>
+                    <tr>
+                        <th>Mã NCC</th>
+                        <th>Tên nhà cung cấp</th>
+                        <th>Địa chỉ</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var ncc in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    <span class="supplier-code">
+                                        @("NCC" + ncc.MaNhaCungCap.ToString("D4"))
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <strong>@ncc.TenNhaCungCap</strong>
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(ncc.DiaChi)
+                                        ? "Chưa cập nhật"
+                                        : ncc.DiaChi)
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(ncc.SoDienThoai)
+                                        ? "Chưa cập nhật"
+                                        : ncc.SoDienThoai)
+                                </td>
+
+                                <td>
+                                    @(string.IsNullOrWhiteSpace(ncc.Email)
+                                        ? "Chưa cập nhật"
+                                        : ncc.Email)
+                                </td>
+
+                                <td>
+                                    @if (ncc.TrangThai == true)
+                                    {
+                                        <span class="supplier-status supplier-active">
+                                            Đang hoạt động
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="supplier-status supplier-inactive">
+                                            Ngừng hoạt động
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="supplier-actions">
+
+                                        <a href="@Url.Action("Details", "NhaCungCap", new { id = ncc.MaNhaCungCap })"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="Xem chi tiết">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+
+                                        <a href="@Url.Action("Edit", "NhaCungCap", new { id = ncc.MaNhaCungCap })"
+                                           class="btn btn-sm btn-outline-warning"
+                                           title="Chỉnh sửa">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+
+                                        @using (Html.BeginForm("Delete", "NhaCungCap",
+                                            new { id = ncc.MaNhaCungCap },
+                                            FormMethod.Post,
+                                            new { onsubmit = "return confirm('Bạn có chắc chắn muốn xóa nhà cung cấp này?');" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    title="Xóa">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        }
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="supplier-empty">
+                                <i class="fa-solid fa-box-open fa-2x mb-2"></i>
+                                <div>Không tìm thấy nhà cung cấp phù hợp.</div>
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

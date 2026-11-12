@@ -1,0 +1,342 @@
+﻿
+@model WebApplication1.Models.Thuoc
+
+@{
+    ViewBag.Title = "Chi tiết sản phẩm";
+    Layout = "~/Views/Shared/_CustomerLayout.cshtml";
+}
+
+<style>
+    .detail-page {
+        padding: 30px 0 55px;
+    }
+
+    .detail-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 4px 18px rgba(0,0,0,.06);
+    }
+
+    .detail-image {
+        min-height: 350px;
+        background: #f5faf7;
+        border-radius: 14px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 25px;
+    }
+
+        .detail-image img {
+            max-width: 100%;
+            max-height: 350px;
+            object-fit: contain;
+        }
+
+    .detail-placeholder {
+        font-size: 110px;
+        color: #26966c;
+    }
+
+    .detail-title {
+        font-size: 27px;
+        font-weight: 800;
+        color: #174d3b;
+        margin-bottom: 15px;
+    }
+
+    .detail-price {
+        font-size: 28px;
+        font-weight: 800;
+        color: #dc3545;
+        margin: 20px 0;
+    }
+
+    .detail-info {
+        border: 1px solid #e9eeee;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-top: 25px;
+    }
+
+        .detail-info .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #edf0ef;
+        }
+
+            .detail-info .info-row:last-child {
+                border-bottom: none;
+            }
+
+    .info-label {
+        color: #68766f;
+        font-weight: 600;
+    }
+
+    .info-value {
+        color: #263c34;
+        font-weight: 600;
+        text-align: right;
+    }
+
+    .detail-description {
+        margin-top: 25px;
+        padding: 20px;
+        background: #f5faf7;
+        border-radius: 12px;
+    }
+
+    .btn-back {
+        border-radius: 9px;
+        padding: 10px 20px;
+    }
+
+    @@media (max-width: 768px) {
+        .detail-card {
+            padding: 18px;
+        }
+
+        .detail-image {
+            min-height: 250px;
+        }
+
+        .detail-title {
+            font-size: 22px;
+        }
+    }
+</style>
+
+<div class="detail-page">
+
+    <!-- ĐƯỜNG DẪN -->
+    <div class="mb-4">
+        <a href="@Url.Action("Index", "Customer")"
+           class="text-decoration-none text-muted">
+            Trang chủ
+        </a>
+
+        <i class="fa-solid fa-angle-right mx-2 text-muted"></i>
+
+        <a href="@Url.Action("Index", "SanPham")"
+           class="text-decoration-none text-muted">
+            Sản phẩm
+        </a>
+
+        <i class="fa-solid fa-angle-right mx-2 text-muted"></i>
+
+        <span class="text-success fw-bold">
+            Chi tiết sản phẩm
+        </span>
+    </div>
+
+    <div class="detail-card">
+        @if (TempData["ThongBao"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show">
+                <i class="fa-solid fa-circle-check me-2"></i>
+                @TempData["ThongBao"]
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+            </div>
+        }
+
+        @if (TempData["ThongBaoLoi"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>
+                @TempData["ThongBaoLoi"]
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert">
+                </button>
+            </div>
+        }
+
+        <div class="row g-4">
+
+            <!-- HÌNH ẢNH -->
+            <div class="col-md-5">
+
+                <div class="detail-image">
+
+                    @if (!string.IsNullOrEmpty(Model.AnhThuoc))
+                    {
+                        <img src="@Url.Content(Model.AnhThuoc)"
+                             alt="@Model.TenThuoc" />
+                    }
+                    else
+                    {
+                        <i class="fa-solid fa-capsules detail-placeholder"></i>
+                    }
+
+                </div>
+
+            </div>
+
+            <!-- THÔNG TIN SẢN PHẨM -->
+            <div class="col-md-7">
+
+                <div class="text-success fw-bold mb-2">
+                    @ViewBag.TenDanhMuc
+                </div>
+
+                <h1 class="detail-title">
+                    @Model.TenThuoc
+                </h1>
+                <div class="text-muted">
+                    Mã sản phẩm:
+                    <strong class="text-dark">
+                        @("SP" + Model.MaThuoc.ToString("D4"))
+                    </strong>
+                </div>
+
+                <div class="detail-price">
+                    @String.Format("{0:N0} đ", Model.GiaBan)
+                </div>
+
+                @if (Model.SoLuongTon > 0)
+                {
+                    <span class="badge bg-success-subtle text-success p-2">
+                        <i class="fa-solid fa-circle-check me-1"></i>
+                        Còn hàng
+                    </span>
+
+                }
+                else
+                {
+                    <span class="badge bg-danger-subtle text-danger p-2">
+                        <i class="fa-solid fa-circle-xmark me-1"></i>
+                        Tạm hết hàng
+                    </span>
+                }
+
+
+                @if (Model.SoLuongTon > 0)
+                {
+                    using (Html.BeginForm("ThemVaoGio", "GioHang", FormMethod.Post))
+                    {
+                        <input type="hidden" name="id" value="@Model.MaThuoc" />
+
+                        <div class="mt-4">
+                            <label class="form-label fw-bold">
+                                Số lượng mua
+                            </label>
+
+                            <div class="d-flex align-items-center gap-3">
+
+                                <input type="number"
+                                       name="soLuong"
+                                       value="1"
+                                       min="1"
+                                       max="@Model.SoLuongTon"
+                                       class="form-control"
+                                       style="width: 110px;"
+                                       required />
+
+                                <span class="text-muted small">
+                                    Còn @Model.SoLuongTon @Model.DonViTinh
+                                </span>
+
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-3 mt-4">
+
+                            <button type="submit"
+                                    class="btn btn-success px-4 py-3 fw-bold">
+                                <i class="fa-solid fa-cart-plus me-2"></i>
+                                Thêm vào giỏ hàng
+                            </button>
+
+                            <a href="@Url.Action("Index", "GioHang")"
+                               class="btn btn-outline-success px-4 py-3">
+                                <i class="fa-solid fa-cart-shopping me-2"></i>
+                                Xem giỏ hàng
+                            </a>
+
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-warning mt-4">
+                        Sản phẩm hiện đã hết hàng, vui lòng quay lại sau.
+                    </div>
+                }
+
+
+                <!-- THÔNG TIN CHI TIẾT -->
+                <div class="detail-info">
+
+                    <div class="info-row">
+                        <span class="info-label">Tên sản phẩm</span>
+                        <span class="info-value">@Model.TenThuoc</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Danh mục</span>
+                        <span class="info-value">@ViewBag.TenDanhMuc</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Hoạt chất</span>
+                        <span class="info-value">
+                            @(string.IsNullOrWhiteSpace(Model.HoatChat)
+                                ? "Chưa cập nhật"
+                                : Model.HoatChat)
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Hàm lượng</span>
+                        <span class="info-value">
+                            @(string.IsNullOrWhiteSpace(Model.HamLuong)
+                                ? "Chưa cập nhật"
+                                : Model.HamLuong)
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label">Đơn vị tính</span>
+                        <span class="info-value">@Model.DonViTinh</span>
+                    </div>
+
+                </div>
+
+                <div class="mt-4">
+                    <a href="@Url.Action("Index", "SanPham")"
+                       class="btn btn-outline-success btn-back">
+                        <i class="fa-solid fa-arrow-left me-2"></i>
+                        Quay lại sản phẩm
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- THÔNG TIN LƯU Ý -->
+        <div class="detail-description">
+            <h5 class="fw-bold text-success">
+                <i class="fa-solid fa-circle-info me-2"></i>
+                Thông tin sản phẩm
+            </h5>
+
+            <p class="text-muted mb-0">
+                Thông tin trên trang được lấy từ dữ liệu sản phẩm
+                do nhà thuốc quản lý. Vui lòng liên hệ dược sĩ
+                để được tư vấn về cách sử dụng thuốc phù hợp.
+            </p>
+        </div>
+
+    </div>
+
+</div>

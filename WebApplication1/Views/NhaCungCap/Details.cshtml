@@ -1,0 +1,182 @@
+﻿
+@model WebApplication1.Models.NhaCungCap
+
+@{
+    ViewBag.Title = "Chi tiết nhà cung cấp";
+}
+
+<style>
+    .supplier-detail-page {
+        max-width: 950px;
+        margin: 25px auto;
+    }
+
+    .detail-header {
+        background: linear-gradient(135deg, #0d6efd, #2457a7);
+        color: white;
+        padding: 25px 30px;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .detail-card {
+        background: white;
+        padding: 30px;
+        border-radius: 0 0 14px 14px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.07);
+    }
+
+    .detail-item {
+        padding: 16px;
+        background: #f8fafc;
+        border: 1px solid #e9eef5;
+        border-radius: 10px;
+        height: 100%;
+    }
+
+    .detail-label {
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 7px;
+    }
+
+    .detail-value {
+        color: #1e293b;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    .detail-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+    }
+</style>
+
+<div class="supplier-detail-page">
+
+    <div class="detail-header">
+        <h3 class="mb-1">
+            <i class="fa-solid fa-building me-2"></i>
+            Chi tiết nhà cung cấp
+        </h3>
+        <p class="mb-0">
+            Thông tin chi tiết của nhà cung cấp trong hệ thống
+        </p>
+    </div>
+
+    <div class="detail-card">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h5 class="fw-bold mb-1">
+                    @Model.TenNhaCungCap
+                </h5>
+                <span class="text-muted">
+                    Mã nhà cung cấp: NCC@Model.MaNhaCungCap.ToString("D4")
+                </span>
+            </div>
+
+            @if (Model.TrangThai == true)
+            {
+                <span class="badge bg-success px-3 py-2">
+                    Đang hoạt động
+                </span>
+            }
+            else
+            {
+                <span class="badge bg-secondary px-3 py-2">
+                    Ngừng hoạt động
+                </span>
+            }
+        </div>
+
+        <hr />
+
+        <h6 class="fw-bold mb-3">
+            <i class="fa-solid fa-circle-info me-2 text-primary"></i>
+            Thông tin chung
+        </h6>
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Tên nhà cung cấp</div>
+                    <div class="detail-value">@Model.TenNhaCungCap</div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Địa chỉ</div>
+                    <div class="detail-value">
+                        @(string.IsNullOrWhiteSpace(Model.DiaChi) ? "Chưa cập nhật" : Model.DiaChi)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Số điện thoại</div>
+                    <div class="detail-value">
+                        @(string.IsNullOrWhiteSpace(Model.SoDienThoai) ? "Chưa cập nhật" : Model.SoDienThoai)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Email</div>
+                    <div class="detail-value">
+                        @(string.IsNullOrWhiteSpace(Model.Email) ? "Chưa cập nhật" : Model.Email)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Mã số thuế</div>
+                    <div class="detail-value">
+                        @(string.IsNullOrWhiteSpace(Model.MaSoThue) ? "Chưa cập nhật" : Model.MaSoThue)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="detail-item">
+                    <div class="detail-label">Trạng thái</div>
+                    <div class="detail-value">
+                        @(Model.TrangThai == true ? "Đang hoạt động" : "Ngừng hoạt động")
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="detail-actions">
+
+            <a href="@Url.Action("Index", "NhaCungCap")"
+               class="btn btn-outline-secondary">
+                <i class="fa-solid fa-arrow-left me-1"></i>
+                Quay lại
+            </a>
+
+            <a href="@Url.Action("LichSuNhapHang", "NhaCungCap", new { id = Model.MaNhaCungCap })"
+               class="btn btn-info text-white">
+                <i class="fa-solid fa-clock-rotate-left me-1"></i>
+                Lịch sử nhập hàng
+            </a>
+
+            <a href="@Url.Action("Edit", "NhaCungCap", new { id = Model.MaNhaCungCap })"
+               class="btn btn-warning">
+                <i class="fa-solid fa-pen-to-square me-1"></i>
+                Chỉnh sửa
+            </a>
+
+        </div>
+
+
+    </div>
+</div>
